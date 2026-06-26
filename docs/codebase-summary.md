@@ -1,0 +1,76 @@
+# Codebase Summary
+
+`wp-pro-max` — Claude Code plugin. HTML → production WordPress pipeline.
+
+## Layout
+
+```
+.claude-plugin/      plugin.json + marketplace.json (install manifests)
+commands/            build.md (orchestrator), status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder)
+skills/              17 stage skills (each SKILL.md + references/)
+agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer
+scripts/             shared bash/node helpers
+schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
+references/          manifest-contract.md, wp-cli-cheatsheet.md
+examples/sample-site small HTML site to run the pipeline against
+docs/                this folder
+plans/               implementation plan + phases
+```
+
+## Skills → stage ids
+
+| Skill | Stage | Reads → Writes |
+|-------|-------|----------------|
+| html-analysis | `analyze` | source → analysis |
+| html-optimization | `optimize` | analysis → optimization |
+| content-modeling | `model` | analysis → contentModel |
+| design-tokens | `tokens` | source CSS → designTokens |
+| theme-conversion | `convert` | analysis/model/tokens/strategy → theme |
+| plugin-selection | `plugins` | requirements/analysis → plugins[] + .wp-env.json |
+| wp-scaffold | `scaffold` | contentModel → theme.files (CPT/tax/ACF) |
+| wp-env-setup | `env` | manifest → .wp-env.json, wp-env start |
+| content-seeding | `seed-content` | contentModel/pages → seed.contentScript |
+| plugin-data-seeding | `seed-plugin-data` | strategy/plugins → seed.pluginDataScript |
+| wp-i18n | `i18n` | i18n.* → POT + Polylang/WPML (vi/en/ja) |
+| wp-seo | `seo` | → seo.* (delegates to claude-seo) |
+| wp-security | `security` | → security.* (hardening + vuln scan) |
+| wp-qa | `qa` | analysis/urls → qa.* (gates ship) |
+| wp-ship | `ship` | deploy/urls → remote site + rollbackPoint |
+| wp-handoff | `handoff` | full manifest → client docs package |
+
+## Scripts
+
+| Script | Role | Invocation |
+|--------|------|------------|
+| manifest-core.sh | generic manifest read/write helpers | sourced by manifest-lib.sh / plugin-manifest-lib.sh |
+| manifest-lib.sh | read/write/progress on wp-build.json | source OR `bash … <cmd>` |
+| plugin-manifest-lib.sh | read/write/progress on wp-plugin.json | source OR `bash … <cmd>` |
+| plugin-scaffold.sh | scaffold a plugin + add feature classes | `bash … new` / `bash … add <feature>` |
+| plugin-env-bootstrap.sh | plugin-local .wp-env.json + wp-env start | `bash …` |
+| plugin-package.sh | allowlisted .zip builder | `bash …` |
+| seed-helpers.sh | idempotent create-if-missing WP-CLI | source OR `bash … <fn>` |
+| extract-tokens.mjs | HTML/CSS → design tokens JSON | `node extract-tokens.mjs <glob…>` |
+| wp-env-bootstrap.sh | render .wp-env.json + wp-env start | `bash …` |
+| visual-diff.mjs | Playwright pixel diff WP vs source | `node visual-diff.mjs --source … --target …` |
+| migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
+
+Both sourced libs (`manifest-lib.sh`, `seed-helpers.sh`) are **zsh- and
+bash-safe**: no source-time `set -e`, no zsh-reserved `status` var, shell-aware
+runner/array handling, and robust executed-vs-sourced detection.
+
+## The manifests
+
+- **`wp-build.json`** — single source of truth for the HTML→site pipeline.
+  Stages read inputs, do work, write outputs, and record `progress.<stage>.status`.
+  Full shape in `schemas/wp-build.schema.json`; contract in
+  `references/manifest-contract.md`.
+- **`wp-plugin.json`** — single source of truth for a standalone plugin build.
+  Drives `plugin-scaffold.sh`, the plugin-local wp-env, and packaging. Shared
+  manifest helpers live in `scripts/manifest-core.sh`; thin wrappers live in
+  `manifest-lib.sh` and `plugin-manifest-lib.sh`.
+
+## Flow
+
+`/wp-pro-max:build <source>` → init manifest → env → analyze → optimize → model →
+tokens → convert → plugins → scaffold → seed-content → seed-plugin-data → i18n →
+seo → security → qa (gate) → ship → handoff. Heavy work delegated to the 3 agents.

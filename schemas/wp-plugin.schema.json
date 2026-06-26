@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://netko-solution.com/wp-pro-max/wp-plugin.schema.json",
+  "title": "wp-plugin.json",
+  "description": "Single source of truth for a WP Pro Max standalone plugin build. Lives in the TARGET plugin project root. Each generator reads and updates it, enabling resumable, idempotent runs.",
+  "type": "object",
+  "required": ["version", "plugin", "architecture", "progress"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Manifest schema version.",
+      "const": "1"
+    },
+    "plugin": {
+      "type": "object",
+      "required": ["slug", "name", "namespace", "textDomain"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "textDomain": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "architecture": {
+      "type": "string",
+      "description": "Plugin architecture.",
+      "enum": ["oop"]
+    },
+    "features": {
+      "type": "array",
+      "description": "Enabled feature generators.",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["cpt", "taxonomy", "settings", "rest", "shortcode", "block"]
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "restExposed": {
+            "type": "boolean",
+            "description": "Expose a CPT on the public REST API."
+          },
+          "options": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "tooling": {
+      "type": "object",
+      "description": "Development tooling flags.",
+      "properties": {
+        "composer": { "type": "boolean" },
+        "phpcs": { "type": "boolean" },
+        "phpunit": { "type": "boolean" },
+        "blockBuild": { "type": "boolean" }
+      }
+    },
+    "env": {
+      "type": "object",
+      "description": "Local wp-env settings.",
+      "properties": {
+        "port": { "type": "integer" },
+        "phpVersion": { "type": "string" },
+        "wpVersion": { "type": "string" },
+        "localUrl": { "type": "string" }
+      }
+    },
+    "progress": {
+      "type": "object",
+      "description": "Per-stage status enabling resume. Keys are stage ids.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": { "enum": ["pending", "in-progress", "done", "failed", "skipped"] },
+          "updatedAt": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

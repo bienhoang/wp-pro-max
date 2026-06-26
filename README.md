@@ -72,24 +72,56 @@ cd my-site && /wp-pro-max:build
 # Manage the local WordPress
 /wp-pro-max:env start
 /wp-pro-max:env cli plugin list
+
+# Build a standalone plugin from scratch (opt-in)
+/wp-pro-max:plugin new acme-widgets
+cd acme-widgets && /wp-pro-max:plugin add cpt
+/wp-pro-max:plugin add settings
+/wp-pro-max:plugin lint
+/wp-pro-max:plugin test
+/wp-pro-max:plugin package
 ```
 
 Skills are also auto-invoked by name when relevant (`wp-pro-max:html-analysis`,
 `wp-pro-max:theme-conversion`, `wp-pro-max:wp-ship`, …).
 
+## Plugin development
+
+`/wp-pro-max:plugin` is a standalone, opt-in plugin builder that mirrors the
+kit's theme-side conventions. It scaffolds a brand-new OOP plugin from
+`wp-plugin.json`, adds secure feature generators (CPT, taxonomy, settings, REST,
+shortcode, Gutenberg block), and wires a full dev loop:
+
+```bash
+/wp-pro-max:plugin new acme-widgets
+/wp-pro-max:plugin add cpt
+/wp-pro-max:plugin add rest
+/wp-pro-max:plugin add block Hero
+/wp-pro-max:plugin lint
+/wp-pro-max:plugin test
+/wp-pro-max:plugin package
+```
+
+It is intentionally separate from the HTML→site pipeline. The skill no-ops
+inside a theme build (`wp-build.json` present, `wp-plugin.json` absent) to avoid
+colliding with `wp-scaffold`.
+
 ## Components
 
-**Commands** — `build` (orchestrator), `status`, `env`, `init`.
+**Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`.
 
-**Skills (16)** — `html-analysis`, `html-optimization`, `content-modeling`,
+**Skills (17)** — `html-analysis`, `html-optimization`, `content-modeling`,
 `design-tokens`, `theme-conversion`, `plugin-selection`, `wp-scaffold`,
 `wp-env-setup`, `content-seeding`, `plugin-data-seeding`, `wp-i18n` (vi/en/ja),
-`wp-seo`, `wp-security`, `wp-qa`, `wp-ship`, `wp-handoff`.
+`wp-seo`, `wp-security`, `wp-qa`, `wp-ship`, `wp-handoff`, `wp-plugin-dev`.
 
-**Agents (3)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`.
+**Agents (4)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
+`wp-plugin-developer`.
 
-**Scripts** — `manifest-lib.sh`, `extract-tokens.mjs`, `wp-env-bootstrap.sh`,
-`seed-helpers.sh`, `visual-diff.mjs`, `migrate-urls.sh`.
+**Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
+`extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
+`plugin-scaffold.sh`, `plugin-package.sh`, `seed-helpers.sh`, `visual-diff.mjs`,
+`migrate-urls.sh`.
 
 ## Docs
 
