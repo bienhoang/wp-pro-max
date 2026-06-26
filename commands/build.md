@@ -17,6 +17,9 @@ in `wp-build.json` in the current project, so the run is **resumable** and
 - `--strategy` = theme backend (default: auto-detected by `html-analysis`).
 - `--from <stage>` / `--to <stage>` = run a sub-range of the pipeline.
 - `--auto` = run without per-stage gates (still gates ship on confirmation).
+- In an `init`-scaffolded parent-wrapper project, inputs live at the project root
+  and the manifest is in `wp/`. `build` auto-descends into `wp/` when the manifest
+  is not in the current dir.
 
 ## Stage order
 
@@ -31,8 +34,11 @@ in order. After each stage, read `wp-build.json` progress and report briefly.
 
 ## Procedure
 
-1. **Init / resume.** If `wp-build.json` is absent, derive project name + theme
-   slug from the source and create it:
+1. **Init / resume.** Resolve project root: if `wp-build.json` is not in the
+   current dir but `./wp/wp-build.json` exists (the `init`-scaffolded
+   parent-wrapper layout), run subsequent stages from `./wp/` (`cd ./wp`).
+   If `wp-build.json` is still absent, derive project name + theme slug from
+   the source and create it:
    `bash "${CLAUDE_PLUGIN_ROOT}/scripts/manifest-lib.sh"` helpers, or write a
    minimal manifest (`version:"1"`, `project`, `strategy`, `progress:{}`). Record
    `source.*`. If present, print `wpbuild_status` and continue from the first

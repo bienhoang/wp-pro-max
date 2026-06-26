@@ -52,6 +52,10 @@ Validate the plugin: `claude plugin validate .`
 ## Usage
 
 ```bash
+# Scaffold a new project, then build
+/wp-pro-max:init my-site
+cd my-site && /wp-pro-max:build
+
 # Full pipeline from a folder of HTML
 /wp-pro-max:build ./examples/sample-site
 
@@ -75,7 +79,7 @@ Skills are also auto-invoked by name when relevant (`wp-pro-max:html-analysis`,
 
 ## Components
 
-**Commands** — `build` (orchestrator), `status`, `env`.
+**Commands** — `build` (orchestrator), `status`, `env`, `init`.
 
 **Skills (16)** — `html-analysis`, `html-optimization`, `content-modeling`,
 `design-tokens`, `theme-conversion`, `plugin-selection`, `wp-scaffold`,

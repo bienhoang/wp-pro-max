@@ -29,6 +29,34 @@ wpbuild_progress analyze in-progress
 
 ```bash
 SRC_TYPE=$(wpbuild_get '.source.type')          # html-files | url | brief
+
+if [ -z "$SRC_TYPE" ] || [ "$SRC_TYPE" = "null" ]; then
+  # Auto-detect source.type from inputs produced by /wp-pro-max:init
+  _has_html=false
+  while IFS= read -r _p; do
+    [ -z "$_p" ] && continue
+    if find "$_p" -maxdepth 5 -name '*.html' -print 2>/dev/null | grep -q .; then
+      _has_html=true
+      break
+    fi
+  done <<EOF
+$(wpbuild_get '.source.htmlPaths[]' 2>/dev/null || true)
+EOF
+
+  if [ "$_has_html" = true ]; then
+    SRC_TYPE=html-files
+  elif [ -s "$(wpbuild_get '.source.briefPath' 2>/dev/null || true)" ]; then
+    SRC_TYPE=brief
+  fi
+
+  if [ -n "$SRC_TYPE" ]; then
+    wpbuild_set '.source.type' "\"$SRC_TYPE\""
+  else
+    echo "analyze: no source found — add HTML to source/ or fill requirements/brief.md" >&2
+    exit 1
+  fi
+  unset _has_html _p
+fi
 ```
 
 - `html-files`: iterate `source.htmlPaths` + `source.assetDirs`. Use **Glob**
