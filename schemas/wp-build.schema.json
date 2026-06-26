@@ -1,0 +1,279 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://netko-solution.com/wp-pro-max/wp-build.schema.json",
+  "title": "wp-build.json",
+  "description": "Single source of truth for a WP Pro Max build. Lives in the TARGET WordPress project root. Each pipeline stage reads and updates it, enabling resumable, idempotent runs.",
+  "type": "object",
+  "required": ["version", "project", "strategy", "progress"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Manifest schema version.",
+      "const": "1"
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "themeSlug"],
+      "properties": {
+        "name": { "type": "string" },
+        "themeSlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "textDomain": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "description": { "type": "string" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "Inputs to the pipeline.",
+      "properties": {
+        "type": { "enum": ["html-files", "url", "brief"] },
+        "htmlPaths": { "type": "array", "items": { "type": "string" } },
+        "assetDirs": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" },
+        "briefPath": { "type": "string" }
+      }
+    },
+    "strategy": {
+      "type": "string",
+      "description": "Adaptive theme conversion backend.",
+      "enum": ["classic-acf", "block-fse", "page-builder"]
+    },
+    "builder": {
+      "type": "string",
+      "description": "Page builder when strategy=page-builder.",
+      "enum": ["elementor", "bricks", "none"]
+    },
+    "analysis": {
+      "type": "object",
+      "description": "Output of html-analysis.",
+      "properties": {
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "title": { "type": "string" },
+              "role": { "enum": ["home", "page", "post", "archive", "single", "landing"] },
+              "sections": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "components": {
+          "type": "array",
+          "description": "Reusable UI components / repeated blocks detected.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "occurrences": { "type": "integer" },
+              "kind": { "enum": ["header", "footer", "nav", "card", "hero", "grid", "form", "cta", "section", "other"] }
+            }
+          }
+        },
+        "assets": {
+          "type": "object",
+          "properties": {
+            "images": { "type": "array", "items": { "type": "string" } },
+            "fonts": { "type": "array", "items": { "type": "string" } },
+            "scripts": { "type": "array", "items": { "type": "string" } },
+            "styles": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "informationArchitecture": {
+          "type": "array",
+          "description": "Sitemap / menu tree.",
+          "items": { "type": "object" }
+        }
+      }
+    },
+    "optimization": {
+      "type": "object",
+      "description": "Output of html-optimization.",
+      "properties": {
+        "outputDir": { "type": "string" },
+        "imagePlan": { "type": "array", "items": { "type": "object" } },
+        "a11yFixes": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "contentModel": {
+      "type": "object",
+      "description": "Output of content-modeling. Derived data structures.",
+      "properties": {
+        "postTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["slug"],
+            "properties": {
+              "slug": { "type": "string" },
+              "labels": { "type": "object" },
+              "supports": { "type": "array", "items": { "type": "string" } },
+              "hasArchive": { "type": "boolean" },
+              "showInRest": { "type": "boolean" }
+            }
+          }
+        },
+        "taxonomies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["slug", "objectType"],
+            "properties": {
+              "slug": { "type": "string" },
+              "objectType": { "type": "array", "items": { "type": "string" } },
+              "hierarchical": { "type": "boolean" }
+            }
+          }
+        },
+        "fieldGroups": {
+          "type": "array",
+          "description": "ACF field groups (or block bindings for FSE).",
+          "items": { "type": "object" }
+        },
+        "menus": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "location": { "type": "string" },
+              "items": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        }
+      }
+    },
+    "designTokens": {
+      "type": "object",
+      "description": "Output of design-tokens. Feeds theme.json / CSS variables.",
+      "properties": {
+        "colors": { "type": "array", "items": { "type": "object" } },
+        "fonts": { "type": "array", "items": { "type": "object" } },
+        "spacing": { "type": "array", "items": { "type": "object" } },
+        "breakpoints": { "type": "object" },
+        "radius": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "plugins": {
+      "type": "array",
+      "description": "Output of plugin-selection. Pinned into .wp-env.json.",
+      "items": {
+        "type": "object",
+        "required": ["slug"],
+        "properties": {
+          "slug": { "type": "string" },
+          "source": { "enum": ["wporg", "zip", "composer", "premium"] },
+          "rationale": { "type": "string" },
+          "category": { "enum": ["seo", "forms", "cache", "security", "builder", "i18n", "media", "ecommerce", "backup", "other"] },
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "description": "Output of theme-conversion + wp-scaffold.",
+      "properties": {
+        "path": { "type": "string" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "templateMap": {
+          "type": "object",
+          "description": "source HTML page -> WP template file."
+        }
+      }
+    },
+    "seed": {
+      "type": "object",
+      "description": "Output of content-seeding + plugin-data-seeding.",
+      "properties": {
+        "contentScript": { "type": "string" },
+        "pluginDataScript": { "type": "string" },
+        "idempotencyKeys": {
+          "type": "array",
+          "description": "Stable keys (post slugs, option names) used for check-before-create.",
+          "items": { "type": "string" }
+        },
+        "lastRun": { "type": "string" }
+      }
+    },
+    "i18n": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "locales": { "type": "array", "items": { "type": "string" }, "default": ["vi", "en", "ja"] },
+        "defaultLocale": { "type": "string", "default": "vi" },
+        "plugin": { "enum": ["polylang", "wpml", "none"] },
+        "potPath": { "type": "string" }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "description": "Output of wp-qa.",
+      "properties": {
+        "visualDiff": { "type": "array", "items": { "type": "object" } },
+        "tolerance": { "type": "number", "default": 0.05 },
+        "brokenLinks": { "type": "array", "items": { "type": "string" } },
+        "a11y": { "type": "object" },
+        "coreWebVitals": { "type": "object" },
+        "passed": { "type": "boolean" }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "metaApplied": { "type": "boolean" },
+        "schemaTypes": { "type": "array", "items": { "type": "string" } },
+        "sitemap": { "type": "boolean" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "hardeningApplied": { "type": "array", "items": { "type": "string" } },
+        "vulnScan": { "type": "object" }
+      }
+    },
+    "env": {
+      "type": "object",
+      "description": "Local wp-env settings.",
+      "properties": {
+        "port": { "type": "integer", "default": 8888 },
+        "phpVersion": { "type": "string" },
+        "wpVersion": { "type": "string" },
+        "localUrl": { "type": "string", "default": "http://localhost:8888" }
+      }
+    },
+    "urls": {
+      "type": "object",
+      "description": "For search-replace during ship.",
+      "properties": {
+        "local": { "type": "string" },
+        "production": { "type": "string" }
+      }
+    },
+    "deploy": {
+      "type": "object",
+      "description": "Output of wp-ship.",
+      "properties": {
+        "target": { "enum": ["ssh-wpcli", "ai1wm", "rsync", "manual"] },
+        "host": { "type": "string" },
+        "path": { "type": "string" },
+        "lastDeploy": { "type": "string" },
+        "rollbackPoint": { "type": "string" }
+      }
+    },
+    "progress": {
+      "type": "object",
+      "description": "Per-stage status enabling resume. Keys are stage ids.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": { "enum": ["pending", "in-progress", "done", "failed", "skipped"] },
+          "updatedAt": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

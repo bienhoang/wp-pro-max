@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+vendor/
+
+# OS / editor
+.DS_Store
+*.log
+*.swp
+
+# wp-env / local WordPress
+.wp-env.override.json
+wp-cli.local.yml
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Build / temp artifacts
+/tmp/
+*.sql
+*.wpress
+!docs/**/*.sql
+plans/
+docs/

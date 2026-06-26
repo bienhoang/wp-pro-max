@@ -1,0 +1,19 @@
+{
+  "name": "wp-pro-max-marketplace",
+  "owner": {
+    "name": "Netko Solution",
+    "email": "bien@netko-solution.com"
+  },
+  "description": "WP Pro Max — Claude Code kit for fast, accurate WordPress site builds from HTML.",
+  "plugins": [
+    {
+      "name": "wp-pro-max",
+      "source": "./",
+      "description": "HTML → production WordPress pipeline: analyze, convert (adaptive theme), seed data, QA, ship.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Netko Solution"
+      }
+    }
+  ]
+}
