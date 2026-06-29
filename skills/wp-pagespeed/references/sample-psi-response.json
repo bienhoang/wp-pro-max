@@ -1,0 +1,209 @@
+{
+  "id": "https://example.com/",
+  "kind": "pagespeedonline#result",
+  "loadingExperience": {
+    "id": "https://example.com/",
+    "metrics": {
+      "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
+        "percentile": 0,
+        "distributions": [
+          {"min": 0, "max": 10, "proportion": 1},
+          {"min": 10, "max": 25, "proportion": 0},
+          {"min": 25, "proportion": 0}
+        ],
+        "category": "FAST"
+      }
+    },
+    "overall_category": "FAST"
+  },
+  "lighthouseResult": {
+    "requestedUrl": "https://example.com/",
+    "finalUrl": "https://example.com/",
+    "lighthouseVersion": "12.0.0",
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36",
+    "fetchTime": "2026-06-27T10:00:00.000Z",
+    "environment": {
+      "networkUserAgent": "Mozilla/5.0 (Linux; Android 10; K)",
+      "hostUserAgent": "Mozilla/5.0 (Linux; Android 10; K)",
+      "benchmarkIndex": 1000
+    },
+    "configSettings": {
+      "emulatedFormFactor": "mobile",
+      "formFactor": "mobile",
+      "locale": "en"
+    },
+    "categories": {
+      "performance": {
+        "id": "performance",
+        "title": "Performance",
+        "score": 0.85,
+        "auditRefs": [
+          {"id": "largest-contentful-paint", "weight": 25},
+          {"id": "cumulative-layout-shift", "weight": 25},
+          {"id": "first-contentful-paint", "weight": 10},
+          {"id": "total-blocking-time", "weight": 30},
+          {"id": "speed-index", "weight": 10}
+        ]
+      }
+    },
+    "audits": {
+      "largest-contentful-paint": {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "description": "Largest Contentful Paint marks the time at which the largest text or image is painted.",
+        "score": 0.78,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 2450,
+        "numericUnit": "millisecond",
+        "displayValue": "2.5 s"
+      },
+      "cumulative-layout-shift": {
+        "id": "cumulative-layout-shift",
+        "title": "Cumulative Layout Shift",
+        "description": "Cumulative Layout Shift measures the movement of visible elements within the viewport.",
+        "score": 0.99,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 0.002,
+        "numericUnit": "unitless",
+        "displayValue": "0.002"
+      },
+      "first-contentful-paint": {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "description": "First Contentful Paint marks the time at which the first text or image is painted.",
+        "score": 0.92,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 980,
+        "numericUnit": "millisecond",
+        "displayValue": "1.0 s"
+      },
+      "total-blocking-time": {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "description": "Sum of all time periods between FCP and Time to Interactive.",
+        "score": 0.71,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 320,
+        "numericUnit": "millisecond",
+        "displayValue": "320 ms"
+      },
+      "speed-index": {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "description": "Speed Index shows how quickly the contents of a page are visibly populated.",
+        "score": 0.88,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 1800,
+        "numericUnit": "millisecond",
+        "displayValue": "1.8 s"
+      },
+      "interaction-to-next-paint": {
+        "id": "interaction-to-next-paint",
+        "title": "Interaction to Next Paint",
+        "description": "Interaction to Next Paint measures responsiveness.",
+        "score": 0.95,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 156,
+        "numericUnit": "millisecond",
+        "displayValue": "160 ms"
+      },
+      "unused-javascript": {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "description": "Reduce JavaScript execution time.",
+        "score": 0.5,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 450,
+        "numericUnit": "millisecond",
+        "displayValue": "Potential savings of 450 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/app.js"}]
+        }
+      },
+      "unused-css-rules": {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "description": "Reduce CSS bytes.",
+        "score": 0.6,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 210,
+        "numericUnit": "millisecond",
+        "displayValue": "Potential savings of 210 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/style.css"}]
+        }
+      },
+      "render-blocking-resources": {
+        "id": "render-blocking-resources",
+        "title": "Eliminate render-blocking resources",
+        "description": "Resources are blocking the first paint of your page.",
+        "score": 0.4,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 680,
+        "numericUnit": "millisecond",
+        "displayValue": "Potential savings of 680 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/block.css"}]
+        }
+      },
+      "modern-image-formats": {
+        "id": "modern-image-formats",
+        "title": "Serve images in next-gen formats",
+        "description": "Image formats like WebP and AVIF often provide better compression.",
+        "score": 0.55,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 320,
+        "numericUnit": "millisecond",
+        "displayValue": "Potential savings of 320 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/hero.jpg"}]
+        }
+      },
+      "efficiently-encode-images": {
+        "id": "efficiently-encode-images",
+        "title": "Efficiently encode images",
+        "description": "Optimized images load faster and consume less cellular data.",
+        "score": 0.65,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 150,
+        "numericUnit": "millisecond",
+        "displayValue": "Potential savings of 150 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/photo.jpg"}]
+        }
+      },
+      "server-response-time": {
+        "id": "server-response-time",
+        "title": "Reduce initial server response time",
+        "description": "Keep the server response time for the main document short.",
+        "score": 0.7,
+        "scoreDisplayMode": "numeric",
+        "numericValue": 120,
+        "numericUnit": "millisecond",
+        "displayValue": "Root document took 120 ms",
+        "details": {
+          "type": "opportunity",
+          "headings": [{"key": "url", "label": "URL", "valueType": "URL"}],
+          "items": [{"url": "https://example.com/"}]
+        }
+      }
+    }
+  },
+  "analysisUTCTimestamp": "2026-06-27T10:00:00.000Z",
+  "_wpProMaxMeta": {
+    "url": "https://example.com/",
+    "strategy": "mobile",
+    "locale": "en",
+    "fetchedAt": "2026-06-27T10:00:00.000Z"
+  }
+}
