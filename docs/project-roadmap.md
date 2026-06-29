@@ -1,10 +1,11 @@
 # Project Roadmap
 
-**Updated:** 2026-06-26 · **Version:** 0.1.0
+**Updated:** 2026-06-29 · **Version:** 0.2.0
 
-## Status — v0.1 (complete)
+## Status — v0.2 (in progress)
 
-All pipeline stages authored as a validated Claude Code plugin.
+v0.1 pipeline is complete. v0.2 adds the optional site-editor command and child
+skills that operate on the optimized HTML copy before theme conversion.
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -17,6 +18,8 @@ All pipeline stages authored as a validated Claude Code plugin.
 | 07 Orchestration & docs | build/status/env commands, README, docs, sample site | ✅ done |
 | 08 i18n & handoff | wp-i18n (vi/en/ja), wp-handoff | ✅ done |
 | 09 Plugin builder | wp-plugin-dev, wp-plugin-developer, plugin-scaffold.sh, plugin-env-bootstrap.sh, plugin-package.sh, wp-plugin.schema.json | ✅ done |
+| 10 Site editor | `/wp-pro-max:site-editor`, section-redesign, content-enrichment, pre-conversion-qa | ✅ done |
+| 11 | Classic ACF strategy | `wp-classic` skill + `references/classic-acf.md`, wired into `theme-conversion` and `wp-scaffold` | ✅ done |
 
 ## Verified
 
@@ -25,6 +28,8 @@ All pipeline stages authored as a validated Claude Code plugin.
 - `extract-tokens.mjs` extracts named colors/fonts/spacing from real CSS.
 - `manifest-lib.sh` + `seed-helpers.sh` source cleanly and run in **both bash and
   zsh**; idempotent helpers exercised with a mocked WP-CLI.
+- New site-editor scripts pass fixture-level TDD and an end-to-end integration
+  test on `examples/sample-site`.
 
 ## Next (v0.2 candidates)
 

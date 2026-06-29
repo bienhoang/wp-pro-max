@@ -274,6 +274,45 @@
           "notes": { "type": "string" }
         }
       }
+    },
+    "siteEditor": {
+      "type": "object",
+      "description": "Output of /wp-pro-max:site-editor child skills. Edits happen on optimization.outputDir only.",
+      "additionalProperties": true,
+      "properties": {
+        "redesign": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "appliedChanges": { "type": "array", "items": { "type": "object" } },
+            "backupDir": { "type": "string" },
+            "lastModified": { "type": "string" },
+            "canRevert": { "type": "boolean" }
+          }
+        },
+        "contentEnrichment": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "addedPages": { "type": "array", "items": { "type": "object" } },
+            "changes": { "type": "array", "items": { "type": "object" } },
+            "lastModified": { "type": "string" }
+          }
+        },
+        "preConversionQa": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "passed": { "type": "boolean" },
+            "mode": { "enum": ["quick", "thorough"] },
+            "a11y": { "type": "object" },
+            "responsive": { "type": "object" },
+            "brandConsistency": { "type": "object" },
+            "htmlValidity": { "type": "object" },
+            "lastRun": { "type": "string" }
+          }
+        }
+      }
     }
   }
 }

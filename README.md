@@ -110,10 +110,11 @@ colliding with `wp-scaffold`.
 
 **Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`.
 
-**Skills (17)** — `html-analysis`, `html-optimization`, `content-modeling`,
+**Skills (18)** — `html-analysis`, `html-optimization`, `content-modeling`,
 `design-tokens`, `theme-conversion`, `plugin-selection`, `wp-scaffold`,
 `wp-env-setup`, `content-seeding`, `plugin-data-seeding`, `wp-i18n` (vi/en/ja),
-`wp-seo`, `wp-security`, `wp-qa`, `wp-ship`, `wp-handoff`, `wp-plugin-dev`.
+`wp-seo`, `wp-security`, `wp-qa`, `wp-ship`, `wp-handoff`, `wp-plugin-dev`,
+`wp-classic`.
 
 **Agents (4)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
 `wp-plugin-developer`.

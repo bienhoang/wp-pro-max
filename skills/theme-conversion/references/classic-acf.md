@@ -1,5 +1,10 @@
 # Backend: classic-acf (PHP templates + Advanced Custom Fields)
 
+> **Note:** This reference is superseded by the canonical
+> `references/classic-acf.md` created for the WP Pro Max `wp-classic` port.
+> Use the canonical reference for new `classic-acf` work; this file is retained
+> for existing projects that were generated from it.
+
 Use when `strategy = classic-acf`. A classic PHP theme: `header.php`/`footer.php`
 + `index.php`/`front-page.php` + page templates, reusable `template-parts/`
 pulled with `get_template_part()`, and custom data via ACF field groups stored as

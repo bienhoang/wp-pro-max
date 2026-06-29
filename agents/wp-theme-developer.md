@@ -27,7 +27,12 @@ template content for the strategy. Do not invent a different structure.
 
 - **classic-acf** — PHP templates, `get_template_part()` for reusable parts, data
   via ACF field groups stored as JSON in `acf-json/` (auto-sync). CSS variables
-  from design tokens live in `style.css` `:root`.
+  from design tokens live in `style.css` `:root`. Read
+  `${CLAUDE_PLUGIN_ROOT}/references/classic-acf.md` for the canonical file set,
+  naming, and anti-patterns. Default templates live in the theme root; use
+  `templates/` only for custom page templates with a `Template Name:` header.
+  Register ACF blocks in `inc/acf-blocks.php` when the content model calls for
+  them.
 - **block-fse** — `theme.json` (version 3) generated from design tokens, block
   templates (`templates/*.html`), parts (`parts/*.html`), and patterns
   (`patterns/*.php`). Dynamic data via `register_post_meta` + block bindings.

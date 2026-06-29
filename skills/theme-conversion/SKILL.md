@@ -48,9 +48,13 @@ routing, the template map, and writing manifest outputs.
 
 3. **Route by strategy** and load the matching reference. Each reference has the
    concrete file set, real template content, and the build order:
-   - `classic-acf` → `references/classic-acf.md`
+   - `classic-acf` → `${CLAUDE_PLUGIN_ROOT}/references/classic-acf.md`
    - `block-fse` → `references/block-fse.md`
    - `page-builder` → `references/page-builder.md`
+
+   For `classic-acf`, read `references/classic-acf.md` before authoring any
+   classic theme files; it defines the canonical file set, naming conventions,
+   template patterns, and anti-patterns.
 
 4. **Build the template map** while creating templates. Map every
    `analysis.pages[].path` to the WordPress template that renders it. Roles:
@@ -58,11 +62,14 @@ routing, the template map, and writing manifest outputs.
    | `role` | classic-acf | block-fse | page-builder |
    |--------|-------------|-----------|--------------|
    | `home` | `front-page.php` | `templates/front-page.html` | page + `_elementor_data` |
-   | `page` | `page.php` / `templates/<slug>.php` | `templates/page.html` | page + `_elementor_data` |
-   | `landing` | `templates/landing.php` | `templates/page-landing.html` | page + `_elementor_data` |
+   | `page` | `page.php` (or `page-{slug}.php`) | `templates/page.html` | page + `_elementor_data` |
+   | `landing` | `landing.php` (or `templates/landing.php`) | `templates/page-landing.html` | page + `_elementor_data` |
    | `archive` | `archive-<cpt>.php` | `templates/archive.html` | builder archive template |
    | `single` | `single-<cpt>.php` | `templates/single.html` | builder single template |
    | `post` | `single.php` | `templates/single.html` | builder single template |
+
+   Root templates are the default for `classic-acf`; use `templates/` only for
+   custom page templates that need a `Template Name:` header.
 
 5. **CSS variables / tokens.** classic-acf and page-builder emit a
    `:root{ --color-…: … }` block (from `designTokens`) into the theme stylesheet;
@@ -91,6 +98,9 @@ routing, the template map, and writing manifest outputs.
 
 ## Notes
 
+- Before converting, warn if `siteEditor.preConversionQa.passed == false` and
+  summarize the failing checks. Do **not** block conversion; just surface the
+  warning so the user can decide whether to fix the optimized copy first.
 - The `convert` stage produces the theme *skeleton* + template map. Registering
   CPTs/taxonomies, ACF field-group JSON, menu locations, enqueues, and image
   sizes is the **`scaffold`** stage (wp-scaffold) — it fills the wiring this

@@ -6,12 +6,12 @@
 
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
-commands/            build.md (orchestrator), status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder)
+commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder)
 skills/              17 stage skills (each SKILL.md + references/)
 agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer
 scripts/             shared bash/node helpers
 schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
-references/          manifest-contract.md, wp-cli-cheatsheet.md
+references/          manifest-contract.md, wp-cli-cheatsheet.md, classic-acf.md
 examples/sample-site small HTML site to run the pipeline against
 docs/                this folder
 plans/               implementation plan + phases
@@ -37,6 +37,10 @@ plans/               implementation plan + phases
 | wp-qa | `qa` | analysis/urls → qa.* (gates ship) |
 | wp-ship | `ship` | deploy/urls → remote site + rollbackPoint |
 | wp-handoff | `handoff` | full manifest → client docs package |
+| section-redesign | `section-redesign` | optimized HTML → redesigned HTML |
+| content-enrichment | `content-enrichment` | optimized HTML + brief → new/enriched pages |
+| pre-conversion-qa | `pre-conversion-qa` | optimized HTML → siteEditor.preConversionQa |
+| wp-classic | — | stack reference for `classic-acf` strategy |
 
 ## Scripts
 
@@ -52,6 +56,14 @@ plans/               implementation plan + phases
 | extract-tokens.mjs | HTML/CSS → design tokens JSON | `node extract-tokens.mjs <glob…>` |
 | wp-env-bootstrap.sh | render .wp-env.json + wp-env start | `bash …` |
 | visual-diff.mjs | Playwright pixel diff WP vs source | `node visual-diff.mjs --source … --target …` |
+| html-section-lib.sh | HTML section find/replace/insert/remove/reorder | sourced |
+| html-preview.sh | open HTML in default browser | `bash html-preview.sh <file>` |
+| pre-qa-a11y.mjs | static a11y scan | `node pre-qa-a11y.mjs <html>…` |
+| pre-qa-html-validity.mjs | static HTML validity scan | `node pre-qa-html-validity.mjs <html>…` |
+| pre-qa-brand.mjs | design-token consistency check | `node pre-qa-brand.mjs <html>… --tokens <file>` |
+| pre-qa-responsive.mjs | Playwright responsive check | `node pre-qa-responsive.mjs <html>…` |
+| content-enrichment.mjs | add pages / approve drafts | `node content-enrichment.mjs <manifest> --add-pages …` |
+| site-editor-lib.sh | argument parsing for site-editor command | sourced |
 | migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
 
 Both sourced libs (`manifest-lib.sh`, `seed-helpers.sh`) are **zsh- and
@@ -71,6 +83,7 @@ runner/array handling, and robust executed-vs-sourced detection.
 
 ## Flow
 
-`/wp-pro-max:build <source>` → init manifest → env → analyze → optimize → model →
-tokens → convert → plugins → scaffold → seed-content → seed-plugin-data → i18n →
-seo → security → qa (gate) → ship → handoff. Heavy work delegated to the 3 agents.
+`/wp-pro-max:build <source>` → init manifest → env → analyze → optimize →
+**optional `/wp-pro-max:site-editor`** → model → tokens → convert → plugins →
+scaffold → seed-content → seed-plugin-data → i18n → seo → security → qa (gate) →
+ship → handoff. Heavy work delegated to the 3 agents.

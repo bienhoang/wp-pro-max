@@ -44,7 +44,8 @@ TEXTDOMAIN="$(wpbuild_get '.project.textDomain')"
 1. **Generate registration code** into a dedicated include (keeps `functions.php`
    lean and under the modularization budget):
    `inc/post-types.php`, `inc/taxonomies.php`, `inc/image-sizes.php`,
-   `inc/enqueue.php`. Require them from `functions.php`.
+   `inc/enqueue.php`. For `classic-acf` also generate `inc/acf-blocks.php` when
+   the content model includes ACF blocks. Require them from `functions.php`.
 2. **classic-acf:** write each `contentModel.fieldGroups[]` entry as
    `acf-json/group_<key>.json` (ACF auto-syncs on admin load). The load/save
    point was wired in `convert`.
@@ -71,7 +72,25 @@ TEXTDOMAIN="$(wpbuild_get '.project.textDomain')"
 require get_theme_file_path( 'inc/post-types.php' );
 require get_theme_file_path( 'inc/taxonomies.php' );
 require get_theme_file_path( 'inc/image-sizes.php' );
+if ( 'classic-acf' === $strategy ) {
+    require get_theme_file_path( 'inc/acf-blocks.php' );
+}
 ```
+
+For the `classic-acf` strategy, also ensure the ACF JSON load/save point is set
+so field groups written to `acf-json/` are auto-synced:
+
+```php
+add_filter( 'acf/settings/save_json', function () {
+    return get_stylesheet_directory() . '/acf-json';
+} );
+add_filter( 'acf/settings/load_json', function ( $paths ) {
+    $paths[] = get_stylesheet_directory() . '/acf-json';
+    return $paths;
+} );
+```
+
+See `references/classic-acf.md` for the full canonical reference.
 
 ## inc/post-types.php — register_post_type from contentModel.postTypes[]
 
