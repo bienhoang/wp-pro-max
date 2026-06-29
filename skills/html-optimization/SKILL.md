@@ -74,7 +74,9 @@ Apply concrete, verifiable fixes and log each one in `a11yFixes`:
   below WCAG AA (4.5:1 normal, 3:1 large) as notes — do not silently recolor
   brand values; recommend the nearest accessible adjustment.
 
-See `references/accessibility-checklist.md` for the full WCAG-AA pass list.
+See `skills/accessibility/references/accessibility-checklist.md` for the full
+WCAG-AA pass list. For deeper WCAG guidance and manual checks, invoke
+`/wp-pro-max:accessibility`.
 
 ## 5. Image optimization plan
 
@@ -115,4 +117,5 @@ Print: files cleaned, count of a11y fixes (by category), images in the plan, and
 any contrast warnings the user must approve. The optimized copy lives in
 `outputDir` and becomes the input for `theme-conversion`.
 
-See also: `references/accessibility-checklist.md`, `references/image-optimization.md`.
+See also: `skills/accessibility/references/accessibility-checklist.md`,
+`references/image-optimization.md`, `skills/accessibility/SKILL.md`.

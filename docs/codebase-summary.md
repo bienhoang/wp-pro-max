@@ -7,7 +7,7 @@
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
 commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder)
-skills/              17 stage skills (each SKILL.md + references/)
+skills/              20 stage skills (each SKILL.md + references/)
 agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer
 scripts/             shared bash/node helpers
 schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
@@ -23,6 +23,7 @@ plans/               implementation plan + phases
 |-------|-------|----------------|
 | html-analysis | `analyze` | source → analysis |
 | html-optimization | `optimize` | analysis → optimization |
+| accessibility | `a11y` | guidance / audit → checklist + known issues |
 | content-modeling | `model` | analysis → contentModel |
 | design-tokens | `tokens` | source CSS → designTokens |
 | theme-conversion | `convert` | analysis/model/tokens/strategy → theme |

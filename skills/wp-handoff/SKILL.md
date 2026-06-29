@@ -33,6 +33,9 @@ Written into the **target project's** `docs/` (not the plugin repo):
 - `docs/maintenance-runbook.md` — operations + rollback (see reference).
 - `docs/update-backup-strategy.md` — cadence + procedures.
 - `docs/monitoring-checklist.md` — uptime/health checks.
+- `docs/a11y-known-issues.md` — outstanding accessibility issues from
+  `skills/accessibility/references/known-issues-template.md` (optional; include
+  if `qa.a11y` has open moderate/minor items).
 
 Then `wpbuild_progress handoff done`.
 

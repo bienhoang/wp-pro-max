@@ -43,6 +43,7 @@ wp-pro-max/
 ├── skills/                      # one skill per stage (model-invocable)
 │   ├── html-analysis/
 │   ├── html-optimization/
+│   ├── accessibility/           # WCAG 2.2 AA guidance + checklists
 │   ├── content-modeling/        # (B)
 │   ├── design-tokens/           # (C)
 │   ├── theme-conversion/        # adaptive: references/{classic-acf,block-fse,page-builder}.md

@@ -110,11 +110,11 @@ colliding with `wp-scaffold`.
 
 **Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`.
 
-**Skills (18)** — `html-analysis`, `html-optimization`, `content-modeling`,
-`design-tokens`, `theme-conversion`, `plugin-selection`, `wp-scaffold`,
-`wp-env-setup`, `content-seeding`, `plugin-data-seeding`, `wp-i18n` (vi/en/ja),
-`wp-seo`, `wp-security`, `wp-qa`, `wp-ship`, `wp-handoff`, `wp-plugin-dev`,
-`wp-classic`.
+**Skills (19)** — `html-analysis`, `html-optimization`, `accessibility`,
+`content-modeling`, `design-tokens`, `theme-conversion`, `plugin-selection`,
+`wp-scaffold`, `wp-env-setup`, `content-seeding`, `plugin-data-seeding`,
+`wp-i18n` (vi/en/ja), `wp-seo`, `wp-security`, `wp-qa`, `wp-ship`,
+`wp-handoff`, `wp-plugin-dev`, `wp-classic`.
 
 **Agents (4)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
 `wp-plugin-developer`.
@@ -136,4 +136,7 @@ colliding with `wp-scaffold`.
 
 ## License
 
-MIT
+This project is released under the MIT License, except for the
+`skills/accessibility/` directory, which adapts conventions from
+[alessioarzenton/claude-code-wp-toolkit](https://github.com/alessioarzenton/claude-code-wp-toolkit)
+(GPL-3.0) and is also provided under MIT for this project. See `LICENSE`.

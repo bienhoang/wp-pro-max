@@ -88,7 +88,9 @@ failure. External links are reported as warnings, not gate failures.
 
 Run automated WCAG checks per page and aggregate. Prefer axe-core injected via
 Playwright (`references/a11y-axe.mjs`); fall back to the manual checklist in
-`references/accessibility-checklist.md`. Cover at minimum:
+`skills/accessibility/references/accessibility-checklist.md`. For remediation
+guidance before re-running QA, invoke `/wp-pro-max:accessibility`. Cover at
+minimum:
 
 - **Images** have meaningful `alt` (decorative → empty `alt=""`).
 - **Form controls** have associated `<label>` / `aria-label`.
@@ -155,5 +157,7 @@ agent with the failing report, target theme path, and acceptance criteria
 (diffRatio ≤ tolerance; zero critical a11y; CWV targets). QA itself only
 measures and gates — it does not edit the theme.
 
-See: `references/responsive-and-visual.md`, `references/accessibility-checklist.md`,
-`references/a11y-axe.mjs`, `references/core-web-vitals.mjs`, `references/crawl-links.sh`.
+See: `references/responsive-and-visual.md`,
+`skills/accessibility/references/accessibility-checklist.md`,
+`references/a11y-axe.mjs`, `references/core-web-vitals.mjs`,
+`references/crawl-links.sh`, `skills/accessibility/SKILL.md`.

@@ -19,7 +19,8 @@ skills that operate on the optimized HTML copy before theme conversion.
 | 08 i18n & handoff | wp-i18n (vi/en/ja), wp-handoff | ✅ done |
 | 09 Plugin builder | wp-plugin-dev, wp-plugin-developer, plugin-scaffold.sh, plugin-env-bootstrap.sh, plugin-package.sh, wp-plugin.schema.json | ✅ done |
 | 10 Site editor | `/wp-pro-max:site-editor`, section-redesign, content-enrichment, pre-conversion-qa | ✅ done |
-| 11 | Classic ACF strategy | `wp-classic` skill + `references/classic-acf.md`, wired into `theme-conversion` and `wp-scaffold` | ✅ done |
+| 11 Classic ACF strategy | `wp-classic` skill + `references/classic-acf.md`, wired into `theme-conversion` and `wp-scaffold` | ✅ done |
+| 12 Accessibility skill port | `skills/accessibility/` + references, wired into `html-optimization`, `wp-qa`, and `wp-handoff`; license attribution in `LICENSE` | ✅ done |
 
 ## Verified
 
