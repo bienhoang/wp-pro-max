@@ -6,9 +6,9 @@
 
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
-commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder)
-skills/              20 stage skills (each SKILL.md + references/)
-agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer
+commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, figma.md, component.md
+skills/              23 skills (each SKILL.md + references/)
+agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer, a11y-checker, figma-analyzer
 scripts/             shared bash/node helpers
 schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
 references/          manifest-contract.md, wp-cli-cheatsheet.md, classic-acf.md
@@ -42,6 +42,9 @@ plans/               implementation plan + phases
 | content-enrichment | `content-enrichment` | optimized HTML + brief → new/enriched pages |
 | pre-conversion-qa | `pre-conversion-qa` | optimized HTML → siteEditor.preConversionQa |
 | wp-classic | — | stack reference for `classic-acf` strategy |
+| wp-performance-backend | — | backend performance diagnosis and optimization (TTFB, DB queries, cache, cron, HTTP) |
+| wp-a11y | — | WCAG 2.2 AA rule reference used by `a11y-checker` |
+| figma-bridge | — | optional Figma-to-code workflow using project design tokens |
 
 ## Scripts
 
@@ -66,6 +69,7 @@ plans/               implementation plan + phases
 | content-enrichment.mjs | add pages / approve drafts | `node content-enrichment.mjs <manifest> --add-pages …` |
 | site-editor-lib.sh | argument parsing for site-editor command | sourced |
 | migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
+| validate-port.sh | frontmatter, link, and placeholder checks for ported skills/agents/commands | `bash scripts/validate-port.sh [file…]` |
 
 Both sourced libs (`manifest-lib.sh`, `seed-helpers.sh`) are **zsh- and
 bash-safe**: no source-time `set -e`, no zsh-reserved `status` var, shell-aware

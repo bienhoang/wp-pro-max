@@ -21,6 +21,7 @@ skills that operate on the optimized HTML copy before theme conversion.
 | 10 Site editor | `/wp-pro-max:site-editor`, section-redesign, content-enrichment, pre-conversion-qa | ✅ done |
 | 11 Classic ACF strategy | `wp-classic` skill + `references/classic-acf.md`, wired into `theme-conversion` and `wp-scaffold` | ✅ done |
 | 12 Accessibility skill port | `skills/accessibility/` + references, wired into `html-optimization`, `wp-qa`, and `wp-handoff`; license attribution in `LICENSE` | ✅ done |
+| 13 WP Kit extras port | `wp-performance-backend` skill, `wp-a11y` rules skill + `a11y-checker` agent + `a11y-audit` command, optional `figma-bridge` skill + `figma-analyzer` agent + `figma`/`component` commands; `scripts/validate-port.sh` TDD harness | ✅ done |
 
 ## Verified
 

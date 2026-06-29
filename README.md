@@ -108,16 +108,17 @@ colliding with `wp-scaffold`.
 
 ## Components
 
-**Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`.
+**Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`, `a11y-audit`, `figma`, `component`.
 
-**Skills (19)** — `html-analysis`, `html-optimization`, `accessibility`,
-`content-modeling`, `design-tokens`, `theme-conversion`, `plugin-selection`,
-`wp-scaffold`, `wp-env-setup`, `content-seeding`, `plugin-data-seeding`,
-`wp-i18n` (vi/en/ja), `wp-seo`, `wp-security`, `wp-qa`, `wp-ship`,
-`wp-handoff`, `wp-plugin-dev`, `wp-classic`.
+**Skills (22)** — `html-analysis`, `html-optimization`, `accessibility`,
+`wp-a11y`, `content-modeling`, `design-tokens`, `theme-conversion`,
+`plugin-selection`, `wp-scaffold`, `wp-env-setup`, `content-seeding`,
+`plugin-data-seeding`, `wp-i18n` (vi/en/ja), `wp-seo`, `wp-security`, `wp-qa`,
+`wp-ship`, `wp-handoff`, `wp-plugin-dev`, `wp-classic`,
+`wp-performance-backend`, `figma-bridge`.
 
-**Agents (4)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
-`wp-plugin-developer`.
+**Agents (6)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
+`wp-plugin-developer`, `a11y-checker`, `figma-analyzer`.
 
 **Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
 `extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
