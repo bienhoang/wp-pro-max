@@ -25,11 +25,11 @@ the plugin at render time — safe to store literally.
 Yoast knowledge-graph (Organization/Person) + social:
 
 ```bash
-wp-env run cli wp option patch update wpseo_titles company_or_person "company"
-wp-env run cli wp option patch update wpseo_titles company_name "Acme Studio"
-wp-env run cli wp option patch update wpseo_titles company_logo "https://acme.com/logo.png"
-wp-env run cli wp option patch update wpseo_social facebook_site "https://facebook.com/acme"
-wp-env run cli wp option patch update wpseo_social twitter_site "acme"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo_titles company_or_person "company"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo_titles company_name "Acme Studio"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo_titles company_logo "https://acme.com/logo.png"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo_social facebook_site "https://facebook.com/acme"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo_social twitter_site "acme"
 ```
 
 Rank Math stores titles/meta defaults in `rank-math-options-titles`;
@@ -46,7 +46,7 @@ Use `wp option get <name> --format=json` to inspect before patching.
 | WP core (no plugin) | `/wp-sitemap.xml` (default since WP 5.5) |
 
 Enable Yoast sitemap (on by default; force on):
-`wp-env run cli wp option patch update wpseo enable_xml_sitemap 1` (key varies by
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option patch update wpseo enable_xml_sitemap 1` (key varies by
 version; verify with `wp option get wpseo --format=json`).
 
 ## robots.txt

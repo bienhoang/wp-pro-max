@@ -49,7 +49,7 @@ reversible. You follow the WP Pro Max manifest contract
 
 ## Conventions
 
-- Local WP-CLI: `wp-env run cli wp …`. Remote WP-CLI: `ssh "$HOST" "wp --path=$RPATH …"`.
+- Local WP-CLI: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" …`. Remote WP-CLI: `ssh "$HOST" "wp --path=$RPATH …"`.
 - rsync with `--delete` only for the theme dir; never `--delete` uploads.
 - Never hardcode the table prefix; resolve via `--path`.
 - Idempotent: timestamped backups, diff-only rsync, search-replace no-op at 0 changes.

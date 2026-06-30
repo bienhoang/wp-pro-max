@@ -2,36 +2,36 @@
 
 Configure multilingual content for **vi (default) / en / ja**, assign languages to
 seeded pages, link translations, and add a switcher. All commands idempotent and
-run via `wp-env run cli wp`.
+run via `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh"`.
 
 ## Polylang (free, preferred)
 
 ### 1. Install + register languages (vi default, then en, ja)
 
 ```bash
-wp-env run cli wp plugin install polylang --activate
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin install polylang --activate
 # pll lang create <name> <slug> <locale>   — guard against duplicates
 for entry in "Vietnamese vi vi" "English en en_US" "日本語 ja ja"; do
   set -- $entry
-  wp-env run cli wp pll lang list --field=slug | grep -qx "$2" \
-    || wp-env run cli wp pll lang create "$1" "$2" "$3"
+  bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang list --field=slug | grep -qx "$2" \
+    || bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang create "$1" "$2" "$3"
 done
-wp-env run cli wp pll option default_lang vi
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll option default_lang vi
 ```
 
 ### 2. Set a post's language
 
 ```bash
 # wp pll post update <id> --lang=<slug>
-wp-env run cli wp pll post update 101 --lang=vi
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll post update 101 --lang=vi
 ```
 
 ### 3. Link translations into one group
 
 ```bash
 # Link the vi/en/ja versions of the same page:
-wp-env run cli wp pll post connect 101 102   # connect en (102) to vi (101)
-wp-env run cli wp pll post connect 101 103   # connect ja (103) to vi (101)
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll post connect 101 102   # connect en (102) to vi (101)
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll post connect 101 103   # connect ja (103) to vi (101)
 ```
 
 To create a translated copy of a page programmatically: duplicate the post
@@ -44,7 +44,7 @@ connect` it to the source. Key duplicated pages by a stable
 Add a Polylang switcher item to the primary menu:
 
 ```bash
-wp-env run cli wp eval '
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" eval '
 $menu = wp_get_nav_menu_object("primary");
 if ($menu) {
   pll_the_languages(["raw"=>1]); // ensure plugin loaded
@@ -66,7 +66,7 @@ custom item above is the CLI-only fallback.)
 WPML has no full official CLI. Configure via admin or `wp eval` against WPML APIs:
 
 ```bash
-wp-env run cli wp plugin install /path/to/sitepress-multilingual-cms.zip --activate
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin install /path/to/sitepress-multilingual-cms.zip --activate
 # Languages + assignments set through WPML setup wizard or icl_* APIs via wp eval.
 ```
 

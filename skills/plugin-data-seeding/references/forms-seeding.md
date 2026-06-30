@@ -41,11 +41,11 @@ Shortcode insertion targets an existing page by known ID and is guarded by a
 presence check, so it belongs in the QA step (not the seed payload):
 
 ```bash
-contact_id="$(wp-env run cli wp post list --post_type=page --name=contact --field=ID | head -n1)"
-form_id="$(wp-env run cli wp post list --post_type=wpcf7_contact_form --name=contact-form --field=ID | head -n1)"
-if ! wp-env run cli wp post get "$contact_id" --field=content | grep -q 'contact-form-7'; then
-  wp-env run cli wp post update "$contact_id" \
-    --post_content="$(wp-env run cli wp post get "$contact_id" --field=content)
+contact_id="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post list --post_type=page --name=contact --field=ID | head -n1)"
+form_id="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post list --post_type=wpcf7_contact_form --name=contact-form --field=ID | head -n1)"
+if ! bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post get "$contact_id" --field=content | grep -q 'contact-form-7'; then
+  bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post update "$contact_id" \
+    --post_content="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post get "$contact_id" --field=content)
 
 [contact-form-7 id=\"$form_id\" title=\"Contact form\"]"
 fi

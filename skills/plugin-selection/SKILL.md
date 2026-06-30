@@ -98,5 +98,5 @@ Premium plugins (e.g. Bricks) are NOT bare slugs — add their ZIP path/URL to
 
 ## Verify
 
-`wp-env run cli wp plugin list --status=active` (after env start) should show the
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin list --status=active` (after env start) should show the
 required plugins active.

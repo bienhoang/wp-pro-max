@@ -49,7 +49,7 @@ OUTDIR="$(wpbuild_get '.optimization.outputDir // "."')"
 ```
 
 Verify wp-env is reachable before seeding:
-`wp-env run cli wp option get siteurl` (if it errors, stop and ask to start env).
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get siteurl` (if it errors, stop and ask to start env).
 
 ## 1. Extract real body content per page
 
@@ -134,7 +134,7 @@ The driver fails loudly if the summary is missing, if the run did nothing, or if
 the batch did not complete — so a partial run is never reported as success.
 Re-running produces **zero** duplicate pages/menu items (the runtime
 short-circuits on existing slugs/titles); the re-run summary shows `created:0`.
-Spot-check: `wp-env run cli wp post list --post_type=page --field=post_name`.
+Spot-check: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post list --post_type=page --field=post_name`.
 
 ## 5. Record outputs
 

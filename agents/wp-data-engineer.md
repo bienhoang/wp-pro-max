@@ -65,7 +65,7 @@ existence before writing and records a stable key. Your job is to produce a
 
 ## Workflow
 
-1. Confirm wp-env is reachable: `wp-env run cli wp option get siteurl`. If it
+1. Confirm wp-env is reachable: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get siteurl`. If it
    errors, stop and report `BLOCKED` (env must be started first).
 2. Read the relevant skill references and manifest slices.
 3. Author the JSON payload (`seed-content-payload.json` /

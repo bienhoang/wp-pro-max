@@ -183,9 +183,10 @@ validate_file() {
           ;;
       esac
       if (( in_block == 1 )) && [[ "$line" =~ ^[[:space:]]*wp[[:space:]]+(db|profile|plugin|cron|doctor|eval|core) ]]; then
-        # Allow lines that already route through wp-env.
-        if [[ ! "$line" =~ wp-env[[:space:]]+run[[:space:]]+cli[[:space:]]+wp ]]; then
-          log_error "[$rel:$line_no] WP-CLI snippet should use 'wp-env run cli wp ...': $line"
+        # Canonical WP-CLI entry is wpx (kept in sync with test/contract-lint.sh):
+        # a bare `wp <sub>` snippet must route through scripts/wpx.sh.
+        if [[ ! "$line" =~ wpx\.sh ]]; then
+          log_error "[$rel:$line_no] WP-CLI snippet should route through wpx (bash \${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh ...): $line"
         fi
       fi
     done < "$file"

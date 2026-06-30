@@ -75,14 +75,14 @@ WP-CLI). Yoast example (slugs differ per plugin — table in
 
 ```bash
 # Resolve the WP post ID for a slug, then set Yoast meta:
-PID="$(wp-env run cli wp post list --post_type=page --name=about --field=ID)"
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_title    "About Acme %%sep%% %%sitename%%"
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_metadesc "Who we are and what we build."
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_opengraph-title       "About Acme"
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_opengraph-description  "Who we are and what we build."
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_twitter-title         "About Acme"
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_canonical             "$SITE/about/"
-wp-env run cli wp post meta update "$PID" _yoast_wpseo_meta-robots-noindex   "0"
+PID="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post list --post_type=page --name=about --field=ID)"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_title    "About Acme %%sep%% %%sitename%%"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_metadesc "Who we are and what we build."
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_opengraph-title       "About Acme"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_opengraph-description  "Who we are and what we build."
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_twitter-title         "About Acme"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_canonical             "$SITE/about/"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _yoast_wpseo_meta-robots-noindex   "0"
 ```
 
 When **no SEO plugin** is installed, write meta into the theme head via a small
@@ -116,7 +116,7 @@ Track which types you applied: `schemaTypes` (step 5). Templates in
   `wp search-replace` for URLs — but set canonical base to production here).
 
 Verify the sitemap:
-`wp-env run cli wp eval 'echo home_url("/sitemap_index.xml");'` then
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" eval 'echo home_url("/sitemap_index.xml");'` then
 `curl -sI "$SITE/sitemap_index.xml"` (expect `200`).
 
 ## 5. Record outputs

@@ -1,6 +1,6 @@
 # WordPress Hardening Checklist (WP-CLI / wp-config)
 
-Each item lists the action, the command (via `wp-env run cli wp …`), and when to
+Each item lists the action, the command (via `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" …`), and when to
 apply it. Record applied ids into `security.hardeningApplied[]`. Items are
 idempotent — re-running is safe.
 
@@ -8,20 +8,20 @@ idempotent — re-running is safe.
 
 ```bash
 # Block the in-dashboard theme/plugin code editor (stops post-exploit edits).
-wp-env run cli wp config set DISALLOW_FILE_EDIT true --raw            # id: disable-file-edit
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set DISALLOW_FILE_EDIT true --raw            # id: disable-file-edit
 
 # Force HTTPS for admin + login — ONLY when production is https.
-wp-env run cli wp config set FORCE_SSL_ADMIN true --raw               # id: force-ssl-admin
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set FORCE_SSL_ADMIN true --raw               # id: force-ssl-admin
 
 # Block plugin/theme install+update from the dashboard on locked prod (optional;
 # skip if the site self-updates). Comment out if the host manages updates.
-# wp-env run cli wp config set DISALLOW_FILE_MODS true --raw
+# bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set DISALLOW_FILE_MODS true --raw
 
 # Reduce post revisions noise / autosave (hardening-adjacent hygiene).
-wp-env run cli wp config set WP_POST_REVISIONS 10 --raw
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set WP_POST_REVISIONS 10 --raw
 
 # Rotate auth keys & salts (invalidates stolen cookies).
-wp-env run cli wp config shuffle-salts                                # id: strong-salts
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config shuffle-salts                                # id: strong-salts
 # Older WP-CLI without shuffle-salts: regenerate from the secret-key API and
 # wp config set each constant (AUTH_KEY, SECURE_AUTH_KEY, ... NONCE_SALT).
 ```
@@ -29,16 +29,16 @@ wp-env run cli wp config shuffle-salts                                # id: stro
 ## Debug off in production
 
 ```bash
-wp-env run cli wp config set WP_DEBUG false --raw
-wp-env run cli wp config set WP_DEBUG_DISPLAY false --raw
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set WP_DEBUG false --raw
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set WP_DEBUG_DISPLAY false --raw
 ```
 
 ## Users — least privilege
 
 ```bash
-wp-env run cli wp user list --role=administrator --fields=ID,user_login,user_email
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" user list --role=administrator --fields=ID,user_login,user_email
 # Expect only the accounts you intend. Downgrade stray admins:
-# wp-env run cli wp user set-role <ID> editor
+# bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" user set-role <ID> editor
 # Ensure no user named 'admin' with a weak/default password remains.
 ```
 
@@ -57,7 +57,7 @@ These are applied by the emitted mu-plugin (`security-mu-plugin.php`):
 ## Login brute-force protection
 
 ```bash
-wp-env run cli wp plugin list --status=active --field=name | grep -E 'limit-login-attempts-reloaded|wordfence' \
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin list --status=active --field=name | grep -E 'limit-login-attempts-reloaded|wordfence' \
   || echo "no login-limiter active — install one (plugin-selection should have added it)"
 ```
 
