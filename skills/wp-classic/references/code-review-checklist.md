@@ -67,6 +67,24 @@ Conventions adapted from [alessioarzenton/claude-code-wp-toolkit](https://github
 - [ ] `functions.php` requires all `inc/*.php` files.
 - [ ] Text domain matches `project.textDomain` everywhere.
 
+## Theme customization (Customizer — branding & colors)
+
+- [ ] Color controls + emitter read the registry `cssVar` (the actual emitted
+      `--color-<slug>`), not a re-guessed `--color-<slug>` template.
+- [ ] Color sanitizer is a **function-color allowlist** (hex/rgb(a)/hsl(a)),
+      applied on save AND re-applied on output — never bare `sanitize_hex_color`.
+- [ ] Emitter escapes values for **CSS context** (not `esc_attr`) and emits a
+      `:root` override only for mods ≠ default; attaches to `<slug>-main` (asserts
+      it is registered, else `<slug>-style`).
+- [ ] Footer logo stored as an **attachment ID** (`WP_Customize_Media_Control` +
+      `absint`); rendered via the guarded `<slug>_the_footer_logo()` helper
+      (defined in `convert`).
+- [ ] Reset reverts colors **and** both logos; `customize_save_after` drops mods
+      equal to default and GCs orphan `<slug>_color_*` mods (token rename).
+- [ ] Branding lives only in theme_mods — no duplicate logo/brand-color on an ACF
+      options page.
+- [ ] All Customizer fns + mod keys namespaced with the theme slug; labels i18n'd.
+
 ## Git
 
 - [ ] Commit messages follow Conventional Commits (`feat`, `fix`, `docs`, etc.).

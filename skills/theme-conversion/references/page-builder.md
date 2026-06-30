@@ -81,6 +81,45 @@ add_action( 'wp_enqueue_scripts', 'acme_enqueue_assets' );
 `:root` CSS variables from `designTokens` go in `style.css` exactly as in
 classic-acf (so builder widgets can reference `var(--color-primary)` etc.).
 
+## Theme customization (colors native, footer logo — pick one)
+
+Cross-strategy contract: `skills/wp-scaffold/references/theme-customization.md`.
+
+- **Colors = native.** Elementor → Site Settings → **Global Colors** (Bricks →
+  Theme Styles → Colors). The owner edits/reset colors there; do **not** author a
+  custom color UI. The `:root` tokens in `style.css` feed widget color pickers.
+- **Header logo = native** Site Identity / logo widget.
+- **Footer logo — one mechanism, not both:**
+  - **Default (host-theme footer):** the thin `footer.php` shell renders the
+    guarded `acme_the_footer_logo()` helper (defined in `convert`, host theme),
+    set by a host-theme Customizer Media control (attachment ID) — identical to
+    classic:
+
+    ```php
+    // functions.php (host theme) — footer-logo control.
+    add_action( 'customize_register', function ( $wp_customize ) {
+        $wp_customize->add_setting( 'acme_footer_logo', array(
+            'default'           => 0,
+            'sanitize_callback' => 'absint',
+        ) );
+        $wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'acme_footer_logo', array(
+            'label'     => __( 'Footer Logo', 'acme' ),
+            'section'   => 'title_tagline',
+            'mime_type' => 'image',
+        ) ) );
+    } );
+    ```
+
+    `footer.php` calls `acme_the_footer_logo();` (guarded helper from `convert`).
+  - **Builder-managed footer:** if Elementor replaces `get_footer()` output
+    entirely (Theme Builder footer template), the host shell is bypassed — there
+    is **no shared-mod path**. Then the footer logo is an **Elementor logo widget
+    only**; do not promise a shared `acme_footer_logo` key or identical render.
+
+State in the build which case applies. When the host shell renders the footer,
+the convert host-theme `functions.php` defines the same guarded
+`acme_the_footer_logo()` helper as classic.
+
 ## Registering the builder
 
 The builder is a plugin selected by the `plugins` stage (Elementor =
@@ -88,9 +127,9 @@ The builder is a plugin selected by the `plugins` stage (Elementor =
 `.wp-env.json` plugins + WP-CLI:
 
 ```bash
-wp-env run cli wp plugin activate elementor
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin activate elementor
 # Elementor option: register theme as compatible (optional)
-wp-env run cli wp option update elementor_disable_color_schemes yes
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option update elementor_disable_color_schemes yes
 ```
 
 ## Elementor `_elementor_data` structure
@@ -143,11 +182,11 @@ The convert stage writes the JSON tree per page to `templates/<page>.elementor.j
 The `seed-plugin-data` stage seeds it (see wp-cli-cheatsheet "Elementor"):
 
 ```bash
-PID=$(wp-env run cli wp post create --post_type=page --post_title="Home" --post_status=publish --porcelain)
-wp-env run cli wp post meta update "$PID" _elementor_edit_mode builder
-wp-env run cli wp post meta update "$PID" _elementor_template_type wp-page
-wp-env run cli wp post meta update "$PID" _elementor_data "$(cat templates/home.elementor.json)"
-wp-env run cli wp elementor flush-css "$PID"   # if elementor CLI present
+PID=$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post create --post_type=page --post_title="Home" --post_status=publish --porcelain)
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _elementor_edit_mode builder
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _elementor_template_type wp-page
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post meta update "$PID" _elementor_data "$(cat templates/home.elementor.json)"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" elementor flush-css "$PID"   # if elementor CLI present
 ```
 
 ## Template map shape (page-builder)

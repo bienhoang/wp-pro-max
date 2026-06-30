@@ -15,8 +15,8 @@ resumable, and idempotent. Read this before authoring any stage skill.
 
 `analyze` · `optimize` · `model` · `tokens` · `convert` · `plugins` ·
 `scaffold` · `seed-content` · `seed-plugin-data` · `qa` · `seo` · `security` ·
-`i18n` · `ship` · `env` · `handoff` · `section-redesign` · `content-enrichment` ·
-`pre-conversion-qa`
+`i18n` · `ship` · `env` · `handoff` · `audit` · `section-redesign` ·
+`content-enrichment` · `pre-conversion-qa`
 
 Three additional stage ids are owned by `/wp-pro-max:site-editor` and run
 **outside the main pipeline**: `section-redesign`, `content-enrichment`, and
@@ -75,6 +75,45 @@ the stage verb, and inputs/outputs). Keep instructions imperative and concrete.
 - Deploy / migration → `wp-deployer` agent.
 - Pass the agent: target paths, the manifest path, files it may modify,
   acceptance criteria, constraints. Never pass full conversation history.
+
+## Theme customization (cross-stage conventions)
+
+End-user branding (header + footer logo, deep `:root` colors, reset-to-defaults)
+is baked into every generated theme. It spans `convert` and `scaffold`, so these
+conventions are authoritative here (deep detail:
+`skills/wp-scaffold/references/theme-customization.md`).
+
+- **Gate:** `theme.customization.enabled` (boolean, default true). The registry
+  itself lives in-theme, not in the manifest.
+- **`--color-<slug>` verbatim contract.** Each editable color var name is
+  `--color-` + the token `slug`, emitted **verbatim** by `convert` (no
+  abbreviation: `foreground` ⇒ `--color-foreground`, never `--color-fg`). The
+  in-theme registry carries the resulting `cssVar`; Customizer controls, the
+  inline-CSS emitter, and reset all read that one `cssVar`. Never re-apply a
+  `--color-<slug>` template downstream.
+- **`main.css` is `:root`-color-free.** `convert` keeps all `:root` color vars in
+  `style.css` and strips them from `assets/css/main.css` (which enqueues after),
+  so reset reverts to the token default, not a raw source color.
+- **Inline-style handle = `<slug>-main`.** The customizer emitter attaches its
+  `:root` override via `wp_add_inline_style( '<slug>-main', … )` (the `main.css`
+  style handle). The emitter checks the handle and falls back to `<slug>-style`,
+  but no-ops if neither is registered — so both this stage contract and any
+  convert-rewrite plan MUST keep the `<slug>-main` handle registered.
+- **Footer logo key = `<slug>_footer_logo`**, stored as an **attachment ID**
+  (`WP_Customize_Media_Control` + `absint`). A **guarded** render helper
+  `<slug>_the_footer_logo()` is defined in `convert` (foundation, behind a
+  `function_exists`/empty-mod guard) — `wp_get_attachment_image()` if set, else
+  `the_custom_logo()`, else site title — so an activated-but-not-yet-scaffolded
+  theme never fatals. The footer render slot must stay in the foundation agent's
+  writable set.
+- **convert → scaffold re-chain.** `convert` wipes + recreates the theme dir and
+  activates it. Customizer code lives in `scaffold`, so the orchestrator MUST
+  re-run `scaffold` after any `convert` re-run when customization is enabled, or
+  the customizer code is lost (theme_mod *state* is DB-resident and survives the
+  wipe, but the *code* does not).
+- **theme_mod state migrates on ship.** Branding lives in `theme_mods_<slug>`
+  (DB), not files — `ship` must export/import it (and remap the footer-logo
+  attachment ID after media reseed) or branding is lost on deploy.
 
 ## Scripts (shared, via `${CLAUDE_PLUGIN_ROOT}/scripts/`)
 

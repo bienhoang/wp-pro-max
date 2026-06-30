@@ -289,11 +289,85 @@ Bound in template HTML:
 <!-- /wp:paragraph -->
 ```
 
+## Theme customization (colors native, footer logo authored)
+
+End-user branding for FSE. Cross-strategy contract:
+`skills/wp-scaffold/references/theme-customization.md`.
+
+- **Colors + reset = native Global Styles.** The owner edits colors in
+  Site Editor → Styles, and resets via Styles → "Reset to defaults". Do **not**
+  author a custom color UI — `theme.json` defaults are the source of truth.
+- **Header logo = Site Logo block** (already in `parts/header.html`).
+- **Footer logo = authored** (FSE has no native separate-footer-logo). FSE has no
+  `inc/` and a deliberately tiny `functions.php`, so scaffold MUST author a real
+  Customizer hook + an image block-bindings source — not just docs:
+
+```php
+// functions.php (scaffold appends) — footer-logo Customizer control.
+function acme_customize_register_footer_logo( $wp_customize ) {
+	$wp_customize->add_setting( 'acme_footer_logo', array(
+		'default'           => 0,
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'acme_footer_logo', array(
+		'label'     => __( 'Footer Logo', 'acme' ),
+		'section'   => 'title_tagline', // Site Identity
+		'mime_type' => 'image',
+	) ) );
+}
+add_action( 'customize_register', 'acme_customize_register_footer_logo' );
+
+// Image block-bindings source: resolves the mod → image URL for binding.
+// Falls back to the site logo so the bound <img> is never empty when a logo
+// exists (block bindings substitute an attribute; they cannot remove the block).
+function acme_register_footer_logo_binding() {
+	register_block_bindings_source( 'acme/footer-logo', array(
+		'label'              => __( 'Footer Logo', 'acme' ),
+		'get_value_callback' => function () {
+			$id = absint( get_theme_mod( 'acme_footer_logo', 0 ) );
+			if ( ! $id ) {
+				$id = absint( get_theme_mod( 'custom_logo', 0 ) ); // fall back to site logo
+			}
+			return $id ? esc_url( wp_get_attachment_image_url( $id, 'full' ) ) : '';
+		},
+	) );
+}
+add_action( 'init', 'acme_register_footer_logo_binding' );
+```
+
+Bound on the image `url` attribute in `parts/footer.html` (WP 6.7+ supports
+binding image attributes). The binding already resolves footer-logo → site-logo,
+so use a **single** bound image (do NOT also add a `wp:site-logo` block — that
+double-renders):
+
+```html
+<!-- wp:image {"metadata":{"bindings":{"url":{"source":"acme/footer-logo"}}},"className":"footer-logo"} -->
+<figure class="wp-block-image footer-logo"><img src="" alt=""/></figure>
+<!-- /wp:image -->
+```
+
+> **Preferred default for FSE — PHP-rendered footer pattern.** Because a bound
+> `wp:image` still renders an empty `<img src="">` when the site has *no* logo at
+> all (and to avoid relying on WP 6.7 image-attribute binding), the robust default
+> is a registered **footer pattern** (`patterns/footer.php`) whose markup calls
+> the guarded `acme_the_footer_logo()` helper (defined in `convert`), referenced
+> from `parts/footer.html`. Use the bound `wp:image` above only when the target WP
+> supports image-attribute binding and a logo is guaranteed set.
+>
+> **Block-theme reality:** WP hides the Customizer admin menu for block themes.
+> Handoff (Phase 4) gives the owner the direct path `/wp-admin/customize.php` to
+> reach the footer-logo control.
+
+Add to the **file set**: `inc/customizer.php` (or the `functions.php` block above)
++ the bound `parts/footer.html`.
+
 ## Build order
 
 1. `style.css` header + `theme.json` from `designTokens`.
-2. `parts/header.html`, `parts/footer.html`.
+2. `parts/header.html`, `parts/footer.html` (footer-logo bound `wp:image` +
+   Site-Logo fallback).
 3. `templates/index.html` (required) + per-role templates → record template map.
 4. `patterns/*.php` per `analysis.components[]`.
-5. Tiny `functions.php` (pattern category, text domain).
+5. Tiny `functions.php` (pattern category, text domain). **Scaffold** appends the
+   footer-logo `customize_register` hook + image block-bindings source.
 6. Hand block-bindings / meta registration to the `scaffold` stage.

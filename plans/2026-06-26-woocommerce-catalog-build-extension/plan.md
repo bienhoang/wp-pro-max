@@ -5,7 +5,7 @@ status: pending
 priority: P2
 branch: "main"
 tags: []
-blockedBy: []
+blockedBy: [2026-07-01-fast-seeder-eval-file]
 blocks: []
 created: "2026-06-26T08:29:38.128Z"
 createdBy: "ck:plan"

@@ -29,6 +29,8 @@ menus, assets, and image sizes. Runs after `convert` and `plugins`.
 | `contentModel.fieldGroups[]` | `acf-json/group_*.json` (classic) or `register_meta()` + bindings (FSE). |
 | `contentModel.menus[]` | `register_nav_menus()` locations. |
 | `designTokens` | `add_image_size()` from breakpoints; enqueue handles. |
+| `designTokens.colors[]` | Editable color-token registry (`--color-<slug>`). |
+| `theme.customization.enabled` | Gate for the branding (logos + colors + reset) step. |
 
 ## Procedure
 
@@ -54,11 +56,34 @@ TEXTDOMAIN="$(wpbuild_get '.project.textDomain')"
 4. **page-builder:** registration of CPTs/tax still applies; fields are handled
    by the builder + seeded postmeta, so no ACF/bindings.
 5. **Menus + image sizes + enqueues** for all strategies.
-6. **Delegate** the actual PHP/JSON authoring to **wp-theme-developer** (paths,
+6. **Theme customization (logos + colors + reset)** — when
+   `theme.customization.enabled`. Derive the color-token registry from
+   `designTokens.colors[]` (each `{ slug, value }` → `cssVar = --color-<slug>`,
+   `sanitize_key()`'d slug, deterministic `label`/`group` as pure functions of
+   the slug), then route by `strategy`:
+   - `classic-acf` → author `inc/customizer.php` (panel + logo/footer-logo/color
+     controls + reset), `assets/js/customizer-preview.js`,
+     `assets/js/customizer-controls.js`; require + enqueue from `inc/enqueue.php`.
+   - `block-fse` → author a customizer file + `customize_register` hook for the
+     **footer logo** only (Media control) + an image block-bindings source bound
+     in `parts/footer.html`; colors/reset stay in native Global Styles.
+   - `page-builder` → host-theme footer-logo Media control + guarded helper
+     render; colors via native Global Colors.
+
+   Constraints (inherited by Phase 2/3 agents): namespace all fns + mod keys with
+   the theme slug; i18n every label; **escape output in its correct context**
+   (CSS context for the `:root` emitter, `esc_url`/`esc_attr` for logo `<img>`);
+   function-color sanitizer (hex|rgb(a)|hsl(a)) on save **and** output; emit
+   `:root` overrides only for mods ≠ default and attach to `<slug>-main`;
+   **deterministic** output (byte-stable `scaffold --force`); **GC** orphan
+   `<slug>_color_*` mods absent from the current registry. The guarded
+   `<slug>_the_footer_logo()` render helper is authored in `convert`, not here.
+   Full spec + per-strategy file matrix: `references/theme-customization.md`.
+7. **Delegate** the actual PHP/JSON authoring to **wp-theme-developer** (paths,
    manifest, contentModel slice, strategy, acceptance: activates with no PHP
    notices, `wp post-type list`/`wp taxonomy list` show the new types, ACF group
-   imports cleanly).
-7. **Record files + finish.**
+   imports cleanly, customizer registers with no notices).
+8. **Record files + finish.**
 
    ```bash
    wpbuild_set '.theme.files' "$UPDATED_FILES_JSON"   # append the new inc/ + acf-json/ files
@@ -239,11 +264,11 @@ add_action( 'init', 'acme_register_bindings' );
 ## Verify
 
 ```bash
-wp-env run cli wp theme activate "$(wpbuild_get '.project.themeSlug')"
-wp-env run cli wp post-type list --field=name
-wp-env run cli wp taxonomy list --field=name
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme activate "$(wpbuild_get '.project.themeSlug')"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post-type list --field=name
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" taxonomy list --field=name
 # classic-acf: confirm ACF picked up the JSON
-wp-env run cli wp eval 'var_export( function_exists("acf_get_field_groups") );'
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" eval 'var_export( function_exists("acf_get_field_groups") );'
 ```
 
 No PHP notices on activation; new post types/taxonomies listed; ACF groups

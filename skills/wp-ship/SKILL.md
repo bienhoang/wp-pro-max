@@ -106,6 +106,35 @@ WP_CLI_RUN="ssh $HOST wp --path=$RPATH" \
   bash "${CLAUDE_PLUGIN_ROOT}/scripts/migrate-urls.sh" --apply
 ```
 
+## 3.5 Migrate customizer branding state (theme_mods)
+
+End-user branding (header + footer logo, brand colors, reset state) lives in the
+`theme_mods_<slug>` option in the DB, **not** in theme files. A full DB import
+(`ssh-wpcli` DB import, `ai1wm` restore) carries it automatically — but when the
+remote DB is **seeded from scratch** (running `seed.*` scripts remotely instead
+of importing the DB), the theme_mods do NOT migrate and branding is lost. In that
+case, export and import them explicitly:
+
+```bash
+SLUG="$(wpbuild_get '.project.themeSlug')"
+# Export from local wp-env:
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get "theme_mods_${SLUG}" --format=json > "/tmp/theme_mods_${SLUG}.json"
+# Import on the remote (only if it wasn't carried by a full DB import):
+scp "/tmp/theme_mods_${SLUG}.json" "$HOST:/tmp/"
+ssh "$HOST" "wp --path='$RPATH' option update 'theme_mods_${SLUG}' \
+  \"\$(cat /tmp/theme_mods_${SLUG}.json)\" --format=json"
+```
+
+**Footer-logo attachment ID remap (F7).** `<slug>_footer_logo` (and core
+`custom_logo`) store an **attachment ID**. If media is reseeded remotely, IDs
+differ and the stored logo dangles. Either:
+- **require a full DB import when a logo mod is set** (media + IDs travel
+  together — preferred), or
+- after a media reseed, look up the new attachment ID by source filename and
+  rewrite the mod (`wp option patch`/`wp eval`) before the smoke test.
+
+Skip this step when the deploy used a full DB import and no media reseed occurred.
+
 ## 4. Smoke test the live site
 
 After deploy + search-replace + flush, verify before declaring success:
@@ -114,11 +143,15 @@ After deploy + search-replace + flush, verify before declaring success:
 ssh "$HOST" "wp --path=$RPATH option get siteurl"   # == urls.production
 ssh "$HOST" "wp --path=$RPATH core verify-checksums" || true
 curl -fsS -o /dev/null -w '%{http_code}\n' "$(wpbuild_get '.urls.production')"
+# Branding survived the migration (when a logo/colors mod was set):
+ssh "$HOST" "wp --path=$RPATH option get theme_mods_$(wpbuild_get '.project.themeSlug') --format=json" | head -c 200
 ```
 
 Expect HTTP 200 on the home page and 1–2 key inner pages, the production siteurl,
 and no leftover `urls.local` references (a second `migrate-urls.sh` dry-run must
-report 0 changes). If any check fails, **roll back** (step 6) and report.
+report 0 changes). When branding was customized, confirm `theme_mods_<slug>`
+carries the logos/colors and the footer logo resolves (no dangling attachment
+ID). If any check fails, **roll back** (step 6) and report.
 
 ## 5. Record outputs
 

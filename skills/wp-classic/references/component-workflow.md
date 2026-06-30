@@ -173,6 +173,14 @@ if ( 'primary' !== $variant ) {
 - [ ] Semantic tags are used (no `<div onclick>`, no `<a role="button">`).
 - [ ] `aria-*` attributes are present where needed.
 
+**Branding (header/footer logo + colors)**:
+- [ ] A footer component that renders a logo calls the guarded
+      `<slug>_the_footer_logo()` helper — never reads the mod inline.
+- [ ] Component colors reference the `:root` `--color-<slug>` vars (editable via
+      the Customizer), not hardcoded hex. Customizer pattern + sanitizer:
+      `../../../references/classic-acf.md` and
+      `../../wp-scaffold/references/theme-customization.md`.
+
 **Validation**:
 - [ ] Build succeeds (if a bundler is configured).
 - [ ] Quick a11y check passes.
