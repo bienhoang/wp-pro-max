@@ -132,6 +132,7 @@ any custom plugin code.
 |---------|-------------|
 | `wp-pro-max` | Natural-language router — describe what you want and dispatch to the right command, skill, or agent. |
 | `build` | Run the full WP Pro Max pipeline — static HTML (or a brief) to a production WordPress site. |
+| `audit` | Scan the generated theme/plugin for a11y, security, performance, and code-style issues. |
 | `status` | Show the WP Pro Max build manifest and per-stage progress for the current project. |
 | `env` | Provision or manage the local wp-env WordPress environment for the current build. |
 | `init` | Scaffold a target WordPress project directory (inputs + `wp/` + starter `wp-build.json`). |
@@ -141,7 +142,7 @@ any custom plugin code.
 | `component` | Create a new UI component from a Figma design or component name. |
 | `site-editor` | Edit the optimized HTML copy before conversion: redesign, add/enrich pages, pre-conversion QA. |
 
-### Skills (23)
+### Skills (24)
 
 | Skill | Description |
 |-------|-------------|
@@ -168,6 +169,7 @@ any custom plugin code.
 | `wp-classic` | Conventions and reference for classic PHP + ACF themes. |
 | `wp-performance-backend` | Diagnose and optimize backend performance (TTFB, queries, cache, cron, HTTP). |
 | `figma-bridge` | Translate Figma designs into WordPress code using project design tokens. |
+| `wp-audit` | Best-practice audit skill for WP Pro Max builds: a11y, security, performance, code-style. |
 
 ### Agents
 
@@ -183,7 +185,7 @@ any custom plugin code.
 **Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
 `extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
 `plugin-scaffold.sh`, `plugin-package.sh`, `seed-helpers.sh`, `visual-diff.mjs`,
-`migrate-urls.sh`.
+`migrate-urls.sh`, `audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
 
 ## Docs
 
