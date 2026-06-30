@@ -42,9 +42,12 @@ routing, the template map, and writing manifest outputs.
    SLUG="$(wpbuild_get '.project.themeSlug')"
    ```
 
-2. **Resolve theme path.** Theme lives at `<target>/wp-content/themes/<themeSlug>/`
-   (mounted live via `.wp-env.json` `mappings`, set by the `env` stage). Create
-   the directory.
+2. **Resolve theme path + resume-wipe.** Theme lives at
+   `<target>/wp-content/themes/<themeSlug>/` (mounted live via `.wp-env.json`
+   `mappings`, set by the `env` stage). Step 1 only continues for a **not-done**
+   `convert`, so **wipe the theme directory and recreate it empty** before
+   authoring. A clean rebuild leaves no orphan template from a crashed prior run
+   to hijack WordPress template resolution (a `done` convert never reaches here).
 
 3. **Route by strategy** and load the matching reference. Each reference has the
    concrete file set, real template content, and the build order:
@@ -56,8 +59,9 @@ routing, the template map, and writing manifest outputs.
    classic theme files; it defines the canonical file set, naming conventions,
    template patterns, and anti-patterns.
 
-4. **Build the template map** while creating templates. Map every
-   `analysis.pages[].path` to the WordPress template that renders it. Roles:
+4. **Template-map reference.** Each `analysis.pages[].path` maps to the WordPress
+   template that renders it; template agents follow this table and return their
+   bucket's entries, which the orchestrator merges in step 7. Roles:
 
    | `role` | classic-acf | block-fse | page-builder |
    |--------|-------------|-----------|--------------|
@@ -75,25 +79,82 @@ routing, the template map, and writing manifest outputs.
    `:root{ --color-…: … }` block (from `designTokens`) into the theme stylesheet;
    block-fse emits `theme.json` instead (no hand-written CSS vars).
 
-6. **Delegate authoring.** Spawn **wp-theme-developer** with: theme path, the
-   manifest path, the chosen reference path, the page/component lists, the token
-   set, files it may create, and acceptance criteria (valid theme that activates
-   with no PHP notices, escaping + i18n applied, template map complete).
+6. **Author the theme — foundation → barrier → fan-out.** `convert` authors the
+   theme with concurrent **wp-theme-developer** agents. Spawn **every** agent
+   (foundation and template) with `WP_BUILD_RETURN_FRAGMENT=1` so it cannot write
+   the manifest — this skill is the sole writer. Full rules:
+   `${CLAUDE_PLUGIN_ROOT}/references/parallel-execution.md`.
 
-7. **Write outputs + finish.**
+   a. **Pre-compute pattern categories.** Derive the full block-pattern category
+      list from `analysis.components` + `contentModel`; pass it to the foundation.
+
+   b. **Foundation agent (1, blocking).** Spawn one wp-theme-developer to write the
+      shared singletons + all convert-time `functions.php`, including the
+      pre-computed pattern-category registrations:
+      - classic-acf / page-builder: `style.css` (`:root{ --… }` tokens), minimal
+        `functions.php` (text domain, enqueue stub, pattern categories),
+        `header.php`, `footer.php`, shared template parts.
+      - block-fse: `theme.json` (tokens), `templates/parts/header.html`,
+        `templates/parts/footer.html`, minimal `functions.php` with a
+        `register_block_pattern_category()` for every category templates will use.
+
+      Constraint: **no wp-env/WP-CLI, no activation.** Returns
+      `{ files[], sharedContract: { paths, slots, patternCategories[], cssConventions } }`.
+
+   c. **Barrier.** Verify every `sharedContract` path exists and is non-empty. If
+      the foundation failed or is partial → **abort**: spawn no template agents,
+      leave `convert` not-done, surface the error.
+
+   d. **Derive N + bucket.** Join `analysis.pages[]` (`role`) with
+      `contentModel.postTypes[].slug` to place archive/single pages on their CPT
+      (requires `model` done — assert `contentModel.postTypes` present, else
+      error). Bucket by role, **hard-cap 4**:
+
+      | Bucket | Templates |
+      |--------|-----------|
+      | 1 | `home` + `landing` |
+      | 2 | static `page` templates |
+      | 3 | `archive-{cpt}` + `single-{cpt}` (grouped by the joined CPT slug) |
+      | 4 | `post`/blog templates (only if distinct from CPT singles) |
+
+      Collapse empty buckets; if ≤1 non-empty bucket remains → a **single**
+      template agent (no fan-out overhead).
+
+   e. **Template agents (N, parallel, single message).** Spawn each
+      wp-theme-developer with `WP_BUILD_RETURN_FRAGMENT=1` and: theme path,
+      manifest path, the chosen reference, its bucket's pages/components, the
+      token set, the foundation `sharedContract`, and **its exact writable file
+      list**. State these hard constraints in the prompt:
+      - Author ONLY files in your writable list; create no others.
+      - Read foundation files READ-ONLY; never edit `functions.php`, `style.css`,
+        `theme.json`, or shared parts.
+      - Use ONLY `sharedContract.patternCategories`; register no new categories.
+      - **Run NO `wp-env`/WP-CLI command and do NOT activate the theme** — author
+        files and return paths only (overrides the agent's default self-activation).
+      - Follow `sharedContract` (slots, shared parts, `cssConventions`) + the
+        strategy reference for naming, escaping, i18n, and partials, so
+        independently authored templates stay uniform (no post-merge normalization).
+
+      Each returns `{ files[], templateMap }` for its bucket.
+
+7. **Validate + merge (orchestrator) + finish.** For each returned agent: assert
+   `files ⊆ assignedSet` (reject + fail the stage on any out-of-set path); assert
+   no `templateMap` key collisions across buckets. Persist **incrementally** as
+   each agent returns (this skill writes via the normal `wpbuild_set`, flag unset):
 
    ```bash
    wpbuild_set '.theme.path' "\"wp-content/themes/${SLUG}\""
-   # files = JSON array of theme-relative paths created
+   # files = JSON array of theme-relative paths, concatenated across buckets
    wpbuild_set '.theme.files' "$FILES_JSON"
-   # templateMap = { "index.html": "front-page.php", "about.html": "page.php", ... }
+   # templateMap = merged across buckets, e.g. { "index.html": "front-page.php", ... }
    wpbuild_set '.theme.templateMap' "$TEMPLATE_MAP_JSON"
    wpbuild_progress convert done "strategy=${STRATEGY}"
    ```
 
-8. **Verify.** Activate and check for fatals:
-   `wp-env run cli wp theme activate <themeSlug>` then
-   `wp-env run cli wp theme list --status=active`. (Requires `env` stage first;
+8. **Activate once (orchestrator only).** After merge, this skill — never an
+   agent — activates and checks for fatals a single time:
+   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme activate <themeSlug>` then
+   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme list --status=active`. (Requires `env` stage first;
    if wp-env not yet running, defer activation to the `env`/`scaffold` stage.)
 
 ## Notes
