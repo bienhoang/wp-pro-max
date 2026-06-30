@@ -111,7 +111,7 @@ if [ -f "$VULN_FILE" ]; then
     }) | {findings:.}
   ' "$VULN_FILE")"
   if [ -f "${WORK}/security.json" ]; then
-    jq -s '.[0].findings + .[1].findings | {findings:.}' "${WORK}/security.json" <<<"$SEC_LIVE" > "${WORK}/security.json.tmp"
+    jq --argjson live "$SEC_LIVE" '{findings: (.findings + $live.findings)}' "${WORK}/security.json" > "${WORK}/security.json.tmp"
     mv "${WORK}/security.json.tmp" "${WORK}/security.json"
   else
     printf '%s\n' "$SEC_LIVE" > "${WORK}/security.json"
@@ -122,8 +122,16 @@ fi
 # 3. Live a11y (axe-core via Playwright)
 # -----------------------------------------------------------------------------
 AXE_FILE="${WORK}/axe.json"
-if command -v node >/dev/null && [ -f "$AXE" ] && node "$AXE" "$LOCAL_URL" --out "$AXE_FILE" >/dev/null 2>&1; then
-  A11Y_LIVE="$(jq '
+AXE_LOG="${WORK}/axe.log"
+if command -v node >/dev/null && [ -f "$AXE" ]; then
+  # a11y-axe.mjs exits 0 (passed) or 1 (violations found) but writes the report
+  # in both cases; only a real error (exit 2/3) leaves no file. Gate the merge on
+  # the written report, not the exit code, and warn when the live probe failed so
+  # static-only a11y findings are not silently presented as DOM-verified.
+  rm -f "$AXE_FILE"
+  node "$AXE" "$LOCAL_URL" --out "$AXE_FILE" >"$AXE_LOG" 2>&1 || true
+  if [ -s "$AXE_FILE" ] && jq -e . "$AXE_FILE" >/dev/null 2>&1; then
+    A11Y_LIVE="$(jq '
     (.violations // []) | map({
       id: ("a11y-axe-" + .id),
       category: "a11y",
@@ -138,11 +146,14 @@ if command -v node >/dev/null && [ -f "$AXE" ] && node "$AXE" "$LOCAL_URL" --out
       external: false
     }) | {findings:.}
   ' "$AXE_FILE")"
-  if [ -f "${WORK}/a11y.json" ]; then
-    jq -s '.[0].findings + .[1].findings | {findings:.}' "${WORK}/a11y.json" <<<"$A11Y_LIVE" > "${WORK}/a11y.json.tmp"
-    mv "${WORK}/a11y.json.tmp" "${WORK}/a11y.json"
+    if [ -f "${WORK}/a11y.json" ]; then
+      jq --argjson live "$A11Y_LIVE" '{findings: (.findings + $live.findings)}' "${WORK}/a11y.json" > "${WORK}/a11y.json.tmp"
+      mv "${WORK}/a11y.json.tmp" "${WORK}/a11y.json"
+    else
+      printf '%s\n' "$A11Y_LIVE" > "${WORK}/a11y.json"
+    fi
   else
-    printf '%s\n' "$A11Y_LIVE" > "${WORK}/a11y.json"
+    echo "audit-live: warning: live a11y (axe-core) probe produced no report; a11y findings are static-only, not DOM-verified. See ${AXE_LOG}" >&2
   fi
 fi
 

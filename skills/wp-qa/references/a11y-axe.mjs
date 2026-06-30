@@ -58,9 +58,12 @@ async function main() {
   const byImpact = { critical: 0, serious: 0, moderate: 0, minor: 0 };
   const violations = [];
   const browser = await chromium.launch();
+  // @axe-core/playwright requires a page from an explicit browser context;
+  // browser.newPage() (an implicit context) is rejected by AxeBuilder.
+  const context = await browser.newContext();
   try {
     for (const url of args.urls) {
-      const page = await browser.newPage();
+      const page = await context.newPage();
       await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
       const results = await new AxeBuilder({ page }).withTags(tags).analyze();
       for (const v of results.violations) {
@@ -75,6 +78,7 @@ async function main() {
       await page.close();
     }
   } finally {
+    await context.close();
     await browser.close();
   }
 

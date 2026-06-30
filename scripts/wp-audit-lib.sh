@@ -54,8 +54,18 @@ audit_parse_args() {
   done
 }
 
+# Resolve the wp-env runner: prefer a global `wp-env`, else `npx @wordpress/env`.
+# Mirrors the runner in scripts/wp-env-bootstrap.sh so projects that depend on
+# `npx @wordpress/env` (no global install) are detected instead of failing fast.
+audit_wp_env_run() {
+  if command -v wp-env >/dev/null 2>&1; then
+    wp-env "$@"
+  else
+    npx --yes @wordpress/env "$@"
+  fi
+}
+
 # Return 0 if wp-env is reachable.
 audit_wp_env_reachable() {
-  command -v wp-env >/dev/null 2>&1 || return 1
-  wp-env run cli wp option get siteurl >/dev/null 2>&1
+  audit_wp_env_run run cli wp option get siteurl >/dev/null 2>&1
 }
