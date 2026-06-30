@@ -83,3 +83,9 @@ When invoked by `/wp-pro-max:plugin add <feature>`:
   packaging notes.
 - `references/tooling.md` — Composer, PHPCS, PHPUnit, readme.txt, and the
   `.zip` packaging contract.
+
+## See also
+
+- `skills/wp-plugin-development/` — always-active guidance for lifecycle,
+  security, data storage, and the pre-ship checklist. Consult these references
+  before authoring custom plugin code.

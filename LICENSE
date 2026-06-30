@@ -24,7 +24,7 @@ SOFTWARE.
 
 Attribution notice
 
-The `skills/accessibility/` directory adapts conventions from
-alessioarzenton/claude-code-wp-toolkit, originally licensed under GPL-3.0. The
-content has been rewritten for WP Pro Max and is distributed under the MIT
-License above.
+The `skills/accessibility/` and `skills/wp-plugin-development/` directories
+adapt conventions from alessioarzenton/claude-code-wp-toolkit, originally
+licensed under GPL-3.0. The content has been rewritten for WP Pro Max and is
+distributed under the MIT License above.

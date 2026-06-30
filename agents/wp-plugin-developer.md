@@ -59,6 +59,10 @@ feature bodies in your own output.
 
 ## Workflow
 
+Before authoring custom plugin code, consult the relevant file in
+`skills/wp-plugin-development/references/` for lifecycle, security, data
+storage, or checklist guidance.
+
 1. Read `wp-plugin.json` and the relevant reference file.
 2. Run `bash "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-scaffold.sh" add <feature>`
    to create the deterministic class file and marker insert atomically.

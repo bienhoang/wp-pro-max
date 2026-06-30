@@ -106,15 +106,19 @@ It is intentionally separate from the HTML→site pipeline. The skill no-ops
 inside a theme build (`wp-build.json` present, `wp-plugin.json` absent) to avoid
 colliding with `wp-scaffold`.
 
+Plugin work is also guided by the always-active `wp-plugin-development` skill,
+which supplies lifecycle, security, data storage, and checklist references for
+any custom plugin code.
+
 ## Components
 
 **Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`, `a11y-audit`, `figma`, `component`.
 
-**Skills (22)** — `html-analysis`, `html-optimization`, `accessibility`,
+**Skills (23)** — `html-analysis`, `html-optimization`, `accessibility`,
 `wp-a11y`, `content-modeling`, `design-tokens`, `theme-conversion`,
 `plugin-selection`, `wp-scaffold`, `wp-env-setup`, `content-seeding`,
 `plugin-data-seeding`, `wp-i18n` (vi/en/ja), `wp-seo`, `wp-security`, `wp-qa`,
-`wp-ship`, `wp-handoff`, `wp-plugin-dev`, `wp-classic`,
+`wp-ship`, `wp-handoff`, `wp-plugin-dev`, `wp-plugin-development`, `wp-classic`,
 `wp-performance-backend`, `figma-bridge`.
 
 **Agents (6)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,

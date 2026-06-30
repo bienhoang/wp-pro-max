@@ -7,7 +7,7 @@
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
 commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, figma.md, component.md
-skills/              23 skills (each SKILL.md + references/)
+skills/              24 skills (each SKILL.md + references/)
 agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer, a11y-checker, figma-analyzer
 scripts/             shared bash/node helpers
 schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
@@ -44,6 +44,8 @@ plans/               implementation plan + phases
 | wp-classic | — | stack reference for `classic-acf` strategy |
 | wp-performance-backend | — | backend performance diagnosis and optimization (TTFB, DB queries, cache, cron, HTTP) |
 | wp-a11y | — | WCAG 2.2 AA rule reference used by `a11y-checker` |
+| wp-plugin-dev | — | opt-in standalone plugin builder (`/wp-pro-max:plugin`) |
+| wp-plugin-development | — | always-active plugin guidance (lifecycle, security, data storage, checklist) |
 | figma-bridge | — | optional Figma-to-code workflow using project design tokens |
 
 ## Scripts
