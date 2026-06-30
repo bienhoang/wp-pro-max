@@ -6,7 +6,7 @@
 
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
-commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, figma.md, component.md
+commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, audit.md, figma.md, component.md
 skills/              24 skills (each SKILL.md + references/)
 agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer, a11y-checker, figma-analyzer
 scripts/             shared bash/node helpers
@@ -36,6 +36,7 @@ plans/               implementation plan + phases
 | wp-seo | `seo` | → seo.* (delegates to claude-seo) |
 | wp-security | `security` | → security.* (hardening + vuln scan) |
 | wp-qa | `qa` | analysis/urls → qa.* (gates ship) |
+| wp-audit | `audit` | theme/plugin + wp-env → audit.* report |
 | wp-ship | `ship` | deploy/urls → remote site + rollbackPoint |
 | wp-handoff | `handoff` | full manifest → client docs package |
 | section-redesign | `section-redesign` | optimized HTML → redesigned HTML |
@@ -70,6 +71,10 @@ plans/               implementation plan + phases
 | pre-qa-responsive.mjs | Playwright responsive check | `node pre-qa-responsive.mjs <html>…` |
 | content-enrichment.mjs | add pages / approve drafts | `node content-enrichment.mjs <manifest> --add-pages …` |
 | site-editor-lib.sh | argument parsing for site-editor command | sourced |
+| wp-audit-lib.sh | argument parsing + wp-env detection for audit | sourced |
+| audit-static.sh | static code-style/a11y/security scanner for wp-audit | `bash … <root> <theme> <scope> <outdir>` |
+| audit-live.sh | live performance/security/a11y probes for wp-audit | `bash … <local-url> <scope> <work-dir>` |
+| audit-aggregate.sh | aggregate per-category findings into reports | `bash … --work-dir … --mode … --scope …` |
 | migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
 | validate-port.sh | frontmatter, link, and placeholder checks for ported skills/agents/commands | `bash scripts/validate-port.sh [file…]` |
 

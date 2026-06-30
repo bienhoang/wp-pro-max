@@ -234,6 +234,42 @@
         "vulnScan": { "type": "object" }
       }
     },
+    "audit": {
+      "type": "object",
+      "description": "Output of /wp-pro-max:audit.",
+      "properties": {
+        "generatedAt": { "type": "string" },
+        "mode": { "enum": ["static", "live"] },
+        "scope": { "enum": ["self", "all"] },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "total": { "type": "integer" },
+            "critical": { "type": "integer" },
+            "high": { "type": "integer" },
+            "medium": { "type": "integer" },
+            "low": { "type": "integer" },
+            "passed": { "type": "boolean" }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "category": { "enum": ["a11y", "security", "performance", "code-style"] },
+              "severity": { "enum": ["critical", "high", "medium", "low", "info"] },
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "message": { "type": "string" },
+              "suggestion": { "type": "string" },
+              "external": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
     "env": {
       "type": "object",
       "description": "Local wp-env settings.",

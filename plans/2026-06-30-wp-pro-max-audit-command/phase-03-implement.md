@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Implement"
-status: pending
+status: done
 priority: P1
 dependencies: [2]
 ---
@@ -42,15 +42,18 @@ Build the command, skill, helper script, schema update, and optional root help c
 3. **Skill**
    - Write `skills/wp-audit/SKILL.md`:
      - Frontmatter: `name: wp-audit`, `user-invocable: true`.
+     - Detect wp-env; if unreachable and `--live` not requested, warn and set mode to `static`.
      - Static phase: run code-style, a11y, security scans via bash/node helpers.
-     - Live phase: detect wp-env, run `wp-qa`, `wp-security`, `wp-performance-backend` probes.
-     - Aggregate and write `wp-build.json` audit entry.
-     - Emit human report to `docs/audit-<timestamp>.md`.
+     - Live phase: when wp-env available, run `wp-qa`, `wp-security`, `wp-performance-backend` probes.
+     - Aggregate findings by category and write `wp-build.json` audit entry.
+     - Emit human report grouped by category to `docs/audit-<timestamp>.md`.
 
 4. **Command**
    - Write `commands/audit.md`:
      - Parse `--scope`, `--live`, `--static`, `--format`, `--out`.
      - Locate `wp-build.json` and derive project root.
+     - Detect wp-env; if missing and user requested `--live`, fail fast with helpful message.
+     - If missing and no `--live`, pass `--static` implicitly and warn.
      - Invoke `wp-pro-max:audit` skill with parsed args.
      - Print summary and report paths.
 

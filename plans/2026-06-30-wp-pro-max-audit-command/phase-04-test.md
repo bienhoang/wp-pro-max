@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Test"
-status: pending
+status: done
 priority: P2
 dependencies: [3]
 ---

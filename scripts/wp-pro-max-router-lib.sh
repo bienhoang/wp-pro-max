@@ -22,16 +22,17 @@ Examples:
   /wp-pro-max "build a site from ./examples/sample-site"
   /wp-pro-max "check status"
   /wp-pro-max "audit accessibility"
+  /wp-pro-max "run a best-practice audit"
   /wp-pro-max "convert to a block theme"
   /wp-pro-max "seed the team members"
   /wp-pro-max "ship to production"
   /wp-pro-max "fix the header template"
 
 Available targets:
-  Commands: build, status, env, init, plugin, a11y-audit, figma, component, site-editor
+  Commands: build, status, env, init, plugin, a11y-audit, audit, figma, component, site-editor
   Skills:   html-analysis, html-optimization, theme-conversion, plugin-selection,
             wp-scaffold, content-seeding, plugin-data-seeding, wp-i18n, wp-seo,
-            wp-security, wp-qa, wp-ship, wp-handoff, wp-env-setup, section-redesign,
+            wp-security, wp-qa, wp-audit, wp-ship, wp-handoff, wp-env-setup, section-redesign,
             content-enrichment, pre-conversion-qa
   Agents:   wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer,
             a11y-checker, figma-analyzer

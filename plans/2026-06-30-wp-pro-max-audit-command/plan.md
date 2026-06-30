@@ -1,7 +1,7 @@
 ---
 title: "WP Pro Max Audit Command"
 description: "Add /wp-pro-max:audit to scan self-authored theme/plugin code against a best-practice checklist (a11y, security, performance, code style) and emit a report plus wp-build.json entry."
-status: pending
+status: done
 priority: P2
 branch: "main"
 tags: [command, skill, audit, a11y, security, performance, code-style, qa]
@@ -16,7 +16,7 @@ source: skill
 
 ## Overview
 
-Add a new user-invocable command `/wp-pro-max:audit` that scans the current WP Pro Max target project for best-practice violations across four categories: **a11y**, **security**, **performance**, and **code style / WordPress conventions**. The command is read-only by default, produces a Markdown + JSON report, and writes an `audit` entry into `wp-build.json`. It runs static checks always and live checks only when `wp-env` is running.
+Add a new user-invocable command `/wp-pro-max:audit` that scans the current WP Pro Max target project for best-practice violations across four categories: **a11y**, **security**, **performance**, and **code style / WordPress conventions**. The command is read-only by default, produces a Markdown + JSON report grouped by category, and writes an `audit` entry into `wp-build.json`. It runs static checks always; live checks run only when `wp-env` is running, otherwise the command auto-degrades to static mode with a clear warning.
 
 This plan also optionally defines the bare `/wp-pro-max` prefix behavior via a root help command.
 
@@ -46,8 +46,9 @@ This plan also optionally defines the bare `/wp-pro-max` prefix behavior via a r
 
 ## Success criteria
 
-- `/wp-pro-max:audit` runs in static mode without `wp-env`.
+- `/wp-pro-max:audit` runs in static mode without `wp-env` (auto-degrades with warning if wp-env is not running).
 - `/wp-pro-max:audit --live` runs when `wp-env` is available.
+- Report groups findings by category (a11y, security, performance, code style).
 - Report is written to `docs/audit-<timestamp>.md` and `audit-<timestamp>.json`.
 - `wp-build.json` contains `audit.summary` and `audit.findings[]`.
 - Default scope only scans self-authored theme + plugin; `--scope all` includes third-party read-only.

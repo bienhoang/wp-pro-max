@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Design"
-status: pending
+status: done
 priority: P1
 dependencies: [1]
 ---
@@ -14,8 +14,8 @@ Design the command interface, data model, file layout, static/live detection, sc
 
 ## Requirements
 
-- Functional: `/wp-pro-max:audit` with flags `--scope`, `--live`, `--static`, `--format`, `--out`.
-- Non-functional: Manifest-driven, idempotent, read-only on source files, graceful degradation.
+- Functional: `/wp-pro-max:audit` with flags `--scope`, `--live`, `--static`, `--format`, `--out`. Report grouped by category.
+- Non-functional: Manifest-driven, idempotent, read-only on source files, auto-degrade to static when wp-env is unavailable.
 
 ## Architecture
 
@@ -24,6 +24,7 @@ Design the command interface, data model, file layout, static/live detection, sc
   │
   ├─ Locate wp-build.json → derive theme.path & plugin root
   ├─ Detect wp-env status
+  │   └─ If wp-env missing/unreachable and --live not requested → warn and run static only
   ├─ Static phase (always)
   │   ├─ code-style scan (PHPCS/WPCS or fallback regex)
   │   ├─ a11y scan (axe on HTML/templates or manual checklist)
@@ -76,6 +77,24 @@ Add to `wp-build.json`:
 - Create: `commands/audit.md`, `skills/wp-audit/SKILL.md`, `skills/wp-audit/references/checklist.md`, `scripts/audit-aggregate.sh`
 - Modify: `schemas/wp-build.schema.json`
 - Optional create: `commands/wp-pro-max.md`
+
+## Report grouping
+
+Findings are grouped by category in both Markdown and JSON outputs:
+
+```
+## a11y
+- [high] a11y-missing-alt ...
+
+## security
+- [medium] sec-direct-superglobal ...
+
+## performance
+- [low] perf-unoptimized-image ...
+
+## code-style
+- [high] wpcs-missing-sanitize ...
+```
 
 ## Implementation steps
 

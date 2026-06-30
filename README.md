@@ -162,6 +162,7 @@ any custom plugin code.
 | `wp-seo` | Apply meta, Open Graph, schema, canonicals, robots, and sitemap. |
 | `wp-security` | Harden WordPress and scan core/plugins/themes/secrets for vulnerabilities. |
 | `wp-qa` | Quality gate: visual diff, responsive checks, broken links, a11y, Core Web Vitals. |
+| `wp-audit` | Best-practice audit (a11y, security, performance, code-style) with static + live probes. |
 | `wp-ship` | Ship the local wp-env build to a production host/VPS with backup + rollback. |
 | `wp-handoff` | Generate client handbook, credentials template, maintenance runbook, update strategy. |
 | `wp-plugin-dev` | Scaffold and build a standalone plugin (`new`, `add`, `lint`, `test`, `package`). |
@@ -169,7 +170,6 @@ any custom plugin code.
 | `wp-classic` | Conventions and reference for classic PHP + ACF themes. |
 | `wp-performance-backend` | Diagnose and optimize backend performance (TTFB, queries, cache, cron, HTTP). |
 | `figma-bridge` | Translate Figma designs into WordPress code using project design tokens. |
-| `wp-audit` | Best-practice audit skill for WP Pro Max builds: a11y, security, performance, code-style. |
 
 ### Agents
 
