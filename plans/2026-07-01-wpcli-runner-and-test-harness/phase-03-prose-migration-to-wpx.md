@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Prose migration to wpx"
-status: pending
+status: done
 effort: "M"
 ---
 

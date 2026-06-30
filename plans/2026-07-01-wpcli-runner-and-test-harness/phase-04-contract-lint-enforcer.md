@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Contract lint enforcer"
-status: pending
+status: done
 effort: "M"
 ---
 

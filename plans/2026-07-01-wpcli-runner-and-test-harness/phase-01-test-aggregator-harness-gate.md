@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Test aggregator + harness gate"
-status: pending
+status: done
 effort: "S"
 ---
 

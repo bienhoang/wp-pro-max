@@ -1,7 +1,7 @@
 ---
 title: "Plugin-wide fast WP-CLI runner + standing test harness"
 description: ""
-status: pending
+status: done
 priority: P2
 branch: "feat/seed-batch-eval-file"
 tags: []
@@ -62,43 +62,66 @@ level, not runtime — Red Team #8); validate + reconcile docs last (P5).
 
 ## Acceptance criteria (whole plan)
 
-- [ ] `scripts/wpx.sh` resolves runner via `wp-cli-runner.sh`: live `-cli-1`
+- [x] `scripts/wpx.sh` resolves runner via `wp-cli-runner.sh`: live `-cli-1`
       `docker exec` default, `wp-env run cli` fallback, `WP_CLI_RUN` override
       verbatim; forwards stdin; zsh-safe (no top-level `set -euo pipefail`, no
       `status`/`path` locals, sourcing guard).
-- [ ] All migrated **prose `wp` call-sites in `skills/`+`agents/`** use `wpx`;
+- [x] All migrated **prose `wp` call-sites in `skills/`+`agents/`** use `wpx`;
       remaining `wp-env run cli` lives only in the explicit, reasoned allowlist
       (fallback line in `wp-cli-runner.sh`; `commands/env.md`; `commands/plugin.md`
       non-`wp` calls; ship SSH runbooks; `seed-helpers.sh`/`migrate-urls.sh`
       script-internal runners; `references/wp-cli-cheatsheet.md`).
-- [ ] **`scripts/validate-port.sh` is reconciled, not bypassed** — its snippet
-      assertion (currently *requires* `wp-env run cli wp`) is updated to require
-      `wpx`, so the two linters agree instead of contradicting (Red Team #1).
-- [ ] `test/run.sh` is the single gate and is green: `claude plugin validate .`
+- [x] **`scripts/validate-port.sh` is reconciled, not bypassed** — its snippet
+      assertion (previously *required* `wp-env run cli wp`) now requires `wpx`,
+      so the two linters agree instead of contradicting (Red Team #1).
+- [x] `test/run.sh` is the single gate and is green: `claude plugin validate .`
       (SKIP+warn if `claude` CLI absent), `bash -n` all `.sh`, `node --check`
       all `.mjs`, `php -l` all `.php` via a throwaway `php:8.2-cli` container
       (NOT wp-env; SKIP only when Docker itself is absent), plus `test/seeder/`.
       All file walks **exclude `node_modules`, `vendor`, `.git`** (Red Team #4).
-- [ ] `test/contract-lint.sh` fails on: missing/invalid SKILL frontmatter; a
+- [x] `test/contract-lint.sh` fails on: missing/invalid SKILL frontmatter; a
       `wpbuild_progress`/`wpbuild_is_done <id>` using an id outside the canonical
       set (the greppable signal — there is no `stage:` field; Red Team #10); and
-      any `wp-env run cli` outside the allowlist. Scope = whole repo minus
-      excludes, matching Phase 3's done-grep exactly (Red Team #2). Invoked by
-      `test/run.sh`.
-- [ ] No host PHP assumed — `php -l` runs via the throwaway container.
-- [ ] README/`manifest-contract.md`/`docs/tech-stack.md`/`docs/system-architecture.md`
-      reconciled: one canonical "WP-CLI via `wpx`" rule; seeding doc-drift
-      (agent authors payload, skill runs inline) corrected.
+      any `wp-env run cli` outside the allowlist. Invoked by `test/run.sh`.
+- [x] No host PHP assumed — `php -l` runs via the throwaway container.
+- [x] README/`manifest-contract.md`/`docs/tech-stack.md`/`docs/system-architecture.md`
+      (+ `CLAUDE.md`) reconciled: one canonical "WP-CLI via `wpx`" rule; seeding
+      delegation prose (agent authors payload, skill runs inline) corrected.
+
+## Implementation notes (deviations from the as-written plan)
+
+Two gaps the Red Team missed, resolved with documented defaults:
+
+1. **Lint scope excludes `plans/` + `reports/`, not just `node_modules/vendor/.git`.**
+   Those trees are tracked (CLAUDE.md's "git-ignored" claim is stale) and hold
+   ~150 `wp-env run cli` mentions in finding-log context — a literal whole-repo
+   scan could never go green (contradicting the plan's own consistency sweep,
+   which treats those mentions as finding-log). The contract lint scans the
+   shipped instruction surface (skills/agents/commands/scripts/references/docs)
+   and allowlists docs/`README`/`CLAUDE.md`/`test/`; `plans/`+`reports/` are
+   excluded as historical artifacts.
+2. **Migrated ALL `wp` subcommand lines in skills/agents** (incl. `make-pot`,
+   `plugin install/activate`, `pll …`), per the authoritative phase-03 step 2.
+   The plan.md overview caveat ("make-pot/search-replace/plugin activate not
+   wpx-wrappable") is contradicted by the executable phase and is technically
+   wrong — they are valid `wp` subcommands; `wpx` prepends the runner + `wp`. The
+   `search-replace` case never applies (it lives in the allowlisted
+   `migrate-urls.sh`). `vuln-scan.sh` stays raw via a `WP_CLI_RUN` line-pattern
+   allowlist (it is a standalone script with its own runner default).
+3. **Added `audit` to the canonical stage ids** in `manifest-contract.md` — the
+   `audit` stage (skill `wp-audit`, command `audit`, `schema.audit`,
+   `wpbuild_progress audit`) shipped earlier without updating the contract list;
+   the new lint correctly flagged the drift, fixed at source.
 
 ## Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Test aggregator + harness gate](./phase-01-test-aggregator-harness-gate.md) | Pending |
-| 2 | [wpx wrapper script](./phase-02-wpx-wrapper-script.md) | Pending |
-| 3 | [Prose migration to wpx](./phase-03-prose-migration-to-wpx.md) | Pending |
-| 4 | [Contract lint enforcer](./phase-04-contract-lint-enforcer.md) | Pending |
-| 5 | [Validation + docs reconcile](./phase-05-validation-docs-reconcile.md) | Pending |
+| 1 | [Test aggregator + harness gate](./phase-01-test-aggregator-harness-gate.md) | Done |
+| 2 | [wpx wrapper script](./phase-02-wpx-wrapper-script.md) | Done |
+| 3 | [Prose migration to wpx](./phase-03-prose-migration-to-wpx.md) | Done |
+| 4 | [Contract lint enforcer](./phase-04-contract-lint-enforcer.md) | Done |
+| 5 | [Validation + docs reconcile](./phase-05-validation-docs-reconcile.md) | Done |
 
 ## Dependencies
 

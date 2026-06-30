@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Validation + docs reconcile"
-status: pending
+status: done
 effort: "S"
 ---
 

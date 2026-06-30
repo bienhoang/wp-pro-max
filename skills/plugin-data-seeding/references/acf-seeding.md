@@ -14,13 +14,13 @@ ACF "Local JSON" auto-sync registers any group found in `acf-json/`. To force it
 from CLI when available:
 
 ```bash
-wp acf sync --all          # acf-cli / ACF PRO; registers/updates groups from JSON
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" acf sync --all   # acf-cli / ACF PRO; registers/updates groups from JSON
 ```
 
 If `wp acf` is unavailable, loading any admin page triggers the sync. Verify:
 
 ```bash
-wp post list --post_type=acf-field-group --field=post_title
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" post list --post_type=acf-field-group --field=post_title
 ```
 
 ## 2. How ACF stores a value (the meta pairing)

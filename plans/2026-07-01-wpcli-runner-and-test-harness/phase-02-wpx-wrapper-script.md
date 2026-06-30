@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "wpx wrapper script"
-status: pending
+status: done
 effort: "S"
 ---
 

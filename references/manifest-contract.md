@@ -48,8 +48,17 @@ the stage verb, and inputs/outputs). Keep instructions imperative and concrete.
 
 ## wp-env / WP-CLI invocation
 
-- All WordPress CLI runs go through wp-env:
-  `wp-env run cli wp <command>` (CWD = target project with `.wp-env.json`).
+- Skill/agent prose runs `wp` subcommands through **`wpx`**:
+  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" <wp subcommand>`. This is the fast
+  default — a long-lived `*-cli-1` `docker exec` (~0.1s) instead of a ~3.7s
+  fresh-container boot — and transparently falls back to `wp-env run cli wp` when
+  no live container resolves. `WP_CLI_RUN` overrides the runner verbatim (CI /
+  remote SSH). It is an **authoring convention enforced at instruction level** by
+  `test/contract-lint.sh` (it lints what the prose tells the model to run) — not a
+  runtime interception of executed commands.
+- Exceptions stay raw and are on the lint allowlist: scripts keep their own
+  runners (`seed-helpers.sh`, `migrate-urls.sh`, `wp-cli-runner.sh`); non-`wp`
+  commands (`composer`, `phpcs`, `tests-cli phpunit`); remote ship SSH runbooks.
 - Mount the generated theme via `.wp-env.json` `mappings` so edits are live.
 - Never hardcode container paths; rely on wp-env defaults.
 

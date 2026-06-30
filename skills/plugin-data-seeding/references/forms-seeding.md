@@ -69,11 +69,11 @@ write**.
 
 ```bash
 # 1) DRY-RUN preview — show what would be affected (SELECT mirrors the WHERE)
-wp db query "SELECT meta_id, meta_key FROM $(wp db prefix)postmeta \
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db query "SELECT meta_id, meta_key FROM $(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db prefix)postmeta \
   WHERE post_id=$form_id AND meta_key='_some_setting';"
 
 # 2) Only after reviewing the rows above, perform the write
-wp db query "UPDATE $(wp db prefix)postmeta SET meta_value='...' \
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db query "UPDATE $(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db prefix)postmeta SET meta_value='...' \
   WHERE post_id=$form_id AND meta_key='_some_setting';"
 ```
 

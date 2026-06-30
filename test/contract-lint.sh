@@ -18,6 +18,12 @@
 #            (whole repo minus node_modules/vendor/.git AND the historical
 #            plans/ + reports/ working-doc trees, which are finding-log artifacts,
 #            not instruction surface). Matches Phase 3's done-grep scope.
+#   FAIL  5. A bare `wp <sub>` command at line-start inside a bash fence in any
+#            shipped .md (model execution surface) — it must route through wpx.
+#            Rule 3 only sees `wp-env run cli`; this closes the bare-`wp` gap so
+#            "all WP-CLI via wpx" is actually enforced, not just claimed. Prose
+#            inline-code mentions are outside fences / not line-start, so exempt;
+#            operator-facing host runbooks (where bare `wp` is correct) are too.
 #   WARN  4. A `wpbuild_get '.<key>'` top-level key absent from the schema (LLM
 #            prose varies — WARN, never FAIL).
 #
@@ -55,13 +61,19 @@ walk() {
 # The ids live as inline `code` spans in the "## Stage ids (canonical)" section
 # (there is no fenced block); extract every backtick-wrapped token there.
 derive_canonical_stages() {
+  # Stop at the first blank line after the id list (the explanatory paragraph
+  # below it also has backtick tokens), and keep only stage-id-shaped tokens
+  # (lowercase + dashes) so prose like `/wp-pro-max:site-editor`,
+  # `optimization.outputDir`, `source/` never enter the canonical set (review #2).
   awk '
     /^## Stage ids \(canonical\)/ { insec=1; next }
     insec && /^## / { exit }
-    insec {
+    insec && started && /^[[:space:]]*$/ { exit }   # blank AFTER the id list ends it
+    insec && /[^[:space:]]/ {
+      started=1
       while (match($0, /`[^`]+`/)) {
         tok = substr($0, RSTART+1, RLENGTH-2)
-        print tok
+        if (tok ~ /^[a-z][a-z0-9-]*$/) print tok
         $0 = substr($0, RSTART+RLENGTH)
       }
     }
@@ -93,6 +105,19 @@ WPENV_ALLOW_FILES=(
 # Path|line-pattern exemptions (a raw `wp` call OUTSIDE the pattern still FAILs).
 WPENV_ALLOW_PATTERNS=(
   "skills/wp-security/references/vuln-scan.sh|WP_CLI_RUN" # script-internal default
+)
+# NOTE: WPENV_ALLOW_FILES whole-file entries (docs/README/CLAUDE.md/cheatsheet)
+# are unpoliced for a NEWLY introduced raw `wp-env run cli` — accepted tradeoff
+# (they are explanatory docs, reconciled in P5); narrow them if that changes.
+
+# Operator-facing docs where bare `wp` is correct because the snippet runs on the
+# PRODUCTION host (where `wp` IS on PATH), not via the local wp-env. Exempt from
+# the bare-`wp`-in-fence rule only.
+BARE_WP_ALLOW_FILES=(
+  "skills/wp-ship/references/ssh-wpcli-runbook.md"   # remote host WP-CLI
+  "skills/wp-ship/references/ai1wm-runbook.md"        # remote host WP-CLI
+  "skills/wp-handoff/references/maintenance-runbook.md" # generated into target docs/
+  "references/wp-cli-cheatsheet.md"                   # documents both forms
 )
 
 _wpenv_allowed() {
@@ -169,6 +194,43 @@ lint_no_raw_wpenv() {
   [ "$bad" -eq 0 ] && ok "no raw 'wp-env run cli' outside the allowlist (shipped surface)"
 }
 
+# === Rule 5: no bare `wp <sub>` in shipped-surface bash fences ================
+# Closes the gap that Rule 3 (which only sees `wp-env run cli`) cannot: a model
+# copying a `wp <sub>` snippet from skill/agent prose has no bare `wp` on PATH in
+# the wp-env-only target — it must go through wpx. Fence-aware + line-start only
+# (a command position), so prose inline-code mentions ("guarded `wp db query`")
+# never trip it. Operator-facing host runbooks are exempt (bare `wp` is correct
+# on the production host).
+_bare_wp_allowed() {
+  local file="$1" entry
+  for entry in "${BARE_WP_ALLOW_FILES[@]}"; do
+    [ "$file" = "./$entry" ] || [ "$file" = "$entry" ] && return 0
+  done
+  return 1
+}
+lint_bare_wp() {
+  local f bad=0 hit
+  while IFS= read -r f; do
+    [ -f "$f" ] || continue
+    _bare_wp_allowed "$f" && continue
+    while IFS= read -r hit; do
+      [ -n "$hit" ] || continue
+      fail "$f:$hit bare 'wp' command in a bash fence — route through wpx"
+      bad=1
+    done < <(awk '
+      /^[[:space:]]*```/ {
+        if (inb) { inb=0 } else {
+          lang=$0; sub(/^[[:space:]]*```/,"",lang); gsub(/[[:space:]]/,"",lang)
+          if (lang=="bash"||lang=="sh"||lang=="shell"||lang=="") inb=1
+        }
+        next
+      }
+      inb && $0 ~ /^[[:space:]]*wp[[:space:]]+[a-z]/ { printf "%d:%s\n", NR, $0 }
+    ' "$f")
+  done < <(walk md)
+  [ "$bad" -eq 0 ] && ok "no bare 'wp' command in bash fences (model surface routes through wpx)"
+}
+
 # === Rule 4 (WARN): manifest keys ⊆ schema ===================================
 lint_manifest_keys() {
   local keys schema_keys k
@@ -188,6 +250,7 @@ echo "contract-lint.sh"
 lint_frontmatter
 lint_stage_ids
 lint_no_raw_wpenv
+lint_bare_wp
 lint_manifest_keys
 
 echo

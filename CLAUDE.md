@@ -79,9 +79,15 @@ outputs back, (4) records progress. This is what makes runs **resumable** and
 
 ## Conventions you must follow
 
-- **wp-env / WP-CLI only.** All WordPress CLI goes through
-  `wp-env run cli wp <command>` (CWD = target project with `.wp-env.json`). Never
-  hardcode container paths; theme/plugins are mounted via `.wp-env.json` mappings.
+- **wp-env / WP-CLI via `wpx`.** Skill/agent prose runs `wp` subcommands through
+  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" <wp subcommand>` — the fast default
+  (long-lived `*-cli-1` `docker exec`; transparently falls back to `wp-env run cli
+  wp` when no live container resolves; `WP_CLI_RUN` overrides verbatim). This is an
+  authoring convention enforced at instruction level by `test/contract-lint.sh`,
+  not a runtime swap. Exceptions stay raw (allowlisted): scripts keep their own
+  runners; non-`wp` commands (`composer`/`phpcs`/`tests-cli`); remote ship SSH.
+  Never hardcode container paths; theme/plugins are mounted via `.wp-env.json`
+  mappings.
 - **Idempotency.** Seeding checks existence before create and records stable keys
   in `seed.idempotencyKeys`. Prefer WP-CLI over raw SQL; destructive `wp db query`
   requires a `--dry-run` preview first.
