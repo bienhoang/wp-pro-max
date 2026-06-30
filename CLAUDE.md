@@ -59,9 +59,16 @@ outputs back, (4) records progress. This is what makes runs **resumable** and
   agent: target paths, manifest path, files it may modify, acceptance criteria,
   constraints — **never** full conversation history.
 - **Scripts** (`scripts/`, called via `${CLAUDE_PLUGIN_ROOT}/scripts/`) — shared
-  helpers: `manifest-lib.sh` (manifest read/write/progress), `seed-helpers.sh`
-  (idempotent create-if-missing WP-CLI helpers), `wp-env-bootstrap.sh`,
-  `extract-tokens.mjs`, `visual-diff.mjs`, `migrate-urls.sh`.
+  helpers: `manifest-lib.sh` (manifest read/write/progress); the **seed batch
+  engine** `seed-batch-runtime.php` (the single shipped PHP runtime; reads a
+  pure-JSON payload from stdin, applies it idempotently via the WP API) +
+  `seed-batch-run.sh` (driver: pipe payload → `wp eval-file`, parse the
+  sentinel summary, append+unique merge into `seed.*`) + `wp-cli-runner.sh`
+  (resolves the runner; binds to this project's `*-cli-1` container, never
+  `*-tests-cli-1`); `wp-env-bootstrap.sh`, `extract-tokens.mjs`,
+  `visual-diff.mjs`, `migrate-urls.sh`. `seed-helpers.sh` is a **deprecated
+  shim** (superseded by the batch engine; retained only for the pending
+  WooCommerce plan).
 
 ### Adaptive theme conversion
 
@@ -82,7 +89,8 @@ outputs back, (4) records progress. This is what makes runs **resumable** and
   helpers must NOT enable `set -euo pipefail` at top level (it alters the caller's
   shell), must avoid zsh-reserved names like `status`, and must detect
   sourcing-vs-execution without relying on `BASH_SOURCE` alone. See the
-  source/execute guards in `manifest-lib.sh` and `seed-helpers.sh` — match them.
+  source/execute guards in `manifest-lib.sh`, `wp-cli-runner.sh`, and
+  `seed-helpers.sh` — match them.
 - **Skill `description` frontmatter** drives auto-invocation: write it in third
   person, mention "WordPress", the stage verb, and the manifest fields it
   reads/writes. Keep `SKILL.md` lean and push real detail into `references/`.

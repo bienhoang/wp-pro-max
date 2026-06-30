@@ -106,6 +106,12 @@ wp/.wp-env/
 wp/wp-cli.local.yml
 *.log
 .DS_Store
+
+# Generated seed batch payloads + extracted page-body debug files (regenerated
+# from wp-build.json + source HTML each run; may carry build-only data).
+wp/seed-content-payload.json
+wp/seed-plugin-data-payload.json
+wp/content/
 EOF
 
 [ -f "$ROOT/README.md" ] || cat > "$ROOT/README.md" <<EOF

@@ -1,0 +1,46 @@
+{
+  "options": {
+    "blogname": "Acme Studio",
+    "blogdescription": "Design that ships",
+    "permalink_structure": "/%postname%/"
+  },
+  "mediaPathPrefix": "/var/www/html/wp-content/uploads/wppm-src/",
+  "media": [
+    { "file": "assets/images/hero.jpg", "title": "hero" }
+  ],
+  "posts": [
+    {
+      "slug": "home",
+      "title": "Home",
+      "type": "page",
+      "template": "front-page.php",
+      "content": "<h1>Welcome to Acme</h1><p>Real extracted body — from content/home.html.</p>",
+      "featured": "hero"
+    },
+    {
+      "slug": "about",
+      "title": "About",
+      "type": "page",
+      "content": "<h1>About</h1><p>Real extracted body — from content/about.html.</p>"
+    },
+    {
+      "slug": "contact",
+      "title": "Contact",
+      "type": "page",
+      "template": "templates/page-contact.php",
+      "content": "<h1>Contact</h1><p>Reach us.</p>"
+    }
+  ],
+  "menus": [
+    {
+      "name": "Primary",
+      "location": "primary",
+      "items": [
+        { "post": "home", "title": "Home" },
+        { "post": "about", "title": "About" },
+        { "post": "contact", "title": "Contact" }
+      ]
+    }
+  ],
+  "frontPage": "home"
+}

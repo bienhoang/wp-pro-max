@@ -1,0 +1,34 @@
+{
+  "acf": [
+    { "post": "home", "field": "subtitle", "value": "Fast, reliable delivery", "key": "field_subtitle_001" },
+    { "post": "home", "field": "price", "value": "1990", "key": "field_price_001" }
+  ],
+  "elementor": [
+    {
+      "post": "home",
+      "data": [
+        {
+          "id": "a1b2c3d",
+          "elType": "section",
+          "settings": { "layout": "boxed" },
+          "elements": [
+            {
+              "id": "c4d5e6f",
+              "elType": "column",
+              "settings": { "_column_size": 100 },
+              "elements": [
+                {
+                  "id": "f7a8b9c",
+                  "elType": "widget",
+                  "widgetType": "text-editor",
+                  "settings": { "editor": "<p>Quotes \"here\" & <b>markup</b> with 'apostrophes'.</p>" },
+                  "elements": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

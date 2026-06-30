@@ -70,7 +70,10 @@ wp-pro-max/
 │   ├── plugin-env-bootstrap.sh  # plugin-local wp-env
 │   ├── plugin-scaffold.sh       # plugin skeleton + feature generators
 │   ├── plugin-package.sh        # allowlisted .zip builder
-│   ├── seed-helpers.sh          # idempotent create-if-missing helpers
+│   ├── seed-batch-runtime.php   # single PHP seed runtime (JSON stdin → WP API)
+│   ├── seed-batch-run.sh        # seed driver (eval-file + sentinel summary merge)
+│   ├── wp-cli-runner.sh         # resolve WP-CLI runner (binds this project's cli)
+│   ├── seed-helpers.sh          # DEPRECATED shim (superseded by the batch engine)
 │   ├── extract-tokens.mjs       # HTML/CSS → design tokens JSON
 │   ├── visual-diff.mjs          # Playwright pixel diff (WP vs source)
 │   └── migrate-urls.sh          # wp search-replace wrapper

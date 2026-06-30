@@ -189,8 +189,10 @@ any custom plugin code.
 
 **Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
 `extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
-`plugin-scaffold.sh`, `plugin-package.sh`, `seed-helpers.sh`, `visual-diff.mjs`,
-`migrate-urls.sh`, `audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
+`plugin-scaffold.sh`, `plugin-package.sh`, the seed batch engine
+(`seed-batch-runtime.php`, `seed-batch-run.sh`, `wp-cli-runner.sh`),
+`seed-helpers.sh` (deprecated shim), `visual-diff.mjs`, `migrate-urls.sh`,
+`audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
 
 ## Docs
 

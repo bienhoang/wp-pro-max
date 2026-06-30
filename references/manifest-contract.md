@@ -55,11 +55,18 @@ the stage verb, and inputs/outputs). Keep instructions imperative and concrete.
 
 ## Idempotency rules
 
-- Content/data seeding must **check before create** (see `scripts/seed-helpers.sh`).
-- Use stable idempotency keys (post slugs, option names, menu names) recorded in
-  `seed.idempotencyKeys`.
-- DB writes prefer WP-CLI commands. Raw `wp db query` only with explicit guards;
-  destructive ops require `--dry-run` preview first.
+- Content/data seeding runs as a **single PHP batch** per stage: the skill emits a
+  pure-JSON payload and `scripts/seed-batch-run.sh` applies it via
+  `wp eval-file scripts/seed-batch-runtime.php` (payload on stdin). Every op
+  **checks before create** in-process via the WP API, so re-runs produce zero
+  duplicates (the re-run summary reports `created:0`).
+- Use stable idempotency keys (post slugs, option names, menu names, media titles,
+  Elementor element ids) recorded in `seed.idempotencyKeys` (merged append+unique).
+- The driver also records `seed.lastRun` and `seed.lastSummary` (counts + errors)
+  and fails loudly on a zero-op or incomplete run — never a silent "done".
+- DB writes use the WP API (no raw `$wpdb` writes in the runtime). A raw
+  `wp db query` is a documented last resort with explicit guards; destructive ops
+  require a `--dry-run`/`SELECT` preview first.
 
 ## Delegation
 
@@ -72,8 +79,16 @@ the stage verb, and inputs/outputs). Keep instructions imperative and concrete.
 ## Scripts (shared, via `${CLAUDE_PLUGIN_ROOT}/scripts/`)
 
 - `manifest-lib.sh` — manifest read/write/progress (Phase 01).
-- `seed-helpers.sh` — idempotent WP-CLI create-if-missing (Phase 04).
-- `wp-env-bootstrap.sh` — scaffold + start wp-env (Phase 03).
+- `seed-batch-runtime.php` — the single shipped PHP seed runtime (reads JSON from
+  stdin, applies idempotently via the WP API).
+- `seed-batch-run.sh` — seed driver (pipe payload → `wp eval-file`, parse the
+  sentinel summary, append+unique merge into `seed.*`).
+- `wp-cli-runner.sh` — resolves the WP-CLI runner; binds to this project's
+  `*-cli-1` container (never `*-tests-cli-1`).
+- `seed-helpers.sh` — **deprecated** create-if-missing shim, superseded by the
+  batch engine; retained only for the pending WooCommerce plan.
+- `wp-env-bootstrap.sh` — scaffold + start wp-env (Phase 03); mounts
+  `optimization.outputDir` so the seed batch reaches media by absolute path.
 - `extract-tokens.mjs` — HTML/CSS → design tokens (Phase 02).
 - `visual-diff.mjs` — Playwright pixel diff WP vs source (Phase 05).
 - `migrate-urls.sh` — `wp search-replace` wrapper for ship (Phase 06).

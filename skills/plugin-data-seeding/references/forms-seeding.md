@@ -10,52 +10,42 @@ A CF7 form is a `wpcf7_contact_form` post. The form template, mail, messages,
 and additional settings live in postmeta (`_form`, `_mail`, `_mail_2`,
 `_messages`, `_additional_settings`).
 
-### Create idempotently
+### Create idempotently (one payload entry)
 
-```bash
-# 1) Create the form post keyed by slug (helper short-circuits if it exists)
-form_id="$(ensure_post contact-form "Contact form" "" wpcf7_contact_form)"
+Emit the form as a `posts[]` entry; its `_form` template and `_mail` settings go
+in `meta`. `_mail` is a JSON **object** — the runtime serializes it correctly via
+the WP API (do **not** hand-serialize into SQL), and compares it array-aware so
+re-runs are no-ops:
 
-# 2) Set the form template (the [tags] users fill in)
-read -r -d '' CF7_FORM <<'HTML' || true
-<label>Your name [text* your-name]</label>
-<label>Your email [email* your-email]</label>
-<label>Message [textarea your-message]</label>
-[submit "Send"]
-HTML
-ensure_acf_value "$form_id" _form "$CF7_FORM"
-
-# 3) Mail settings (serialized array — set via PHP for correct serialization)
-wp eval '
-  $id = '"$form_id"';
-  $mail = [
-    "active"     => true,
-    "subject"    => "[your-subject]",
-    "sender"     => "[your-name] <wordpress@example.test>",
-    "recipient"  => get_option("admin_email"),
-    "body"       => "From: [your-name] <[your-email]>\n\n[your-message]",
-    "additional_headers" => "Reply-To: [your-email]",
-    "attachments"=> "",
-    "use_html"   => false,
-    "exclude_blank" => false,
-  ];
-  update_post_meta($id, "_mail", $mail);
-'
+```json
+{ "slug": "contact-form", "title": "Contact form", "type": "wpcf7_contact_form", "content": "",
+  "meta": {
+    "_form": "<label>Your name [text* your-name]</label>\n<label>Your email [email* your-email]</label>\n<label>Message [textarea your-message]</label>\n[submit \"Send\"]",
+    "_mail": {
+      "active": true,
+      "subject": "[your-subject]",
+      "sender": "[your-name] <wordpress@example.test>",
+      "recipient": "[admin_email]",
+      "body": "From: [your-name] <[your-email]>\n\n[your-message]",
+      "additional_headers": "Reply-To: [your-email]",
+      "attachments": "", "use_html": false, "exclude_blank": false
+    }
+  } }
 ```
 
-`update_post_meta` via `wp eval` serializes the PHP array correctly — do **not**
-hand-serialize into a `wp db query`. Idempotency: the post is keyed by slug;
-re-setting identical meta is harmless, and `ensure_acf_value` skips unchanged
-string meta.
+The post is keyed by slug, so re-running creates no duplicate form.
 
 ### Wire the shortcode into the contact page
 
+Shortcode insertion targets an existing page by known ID and is guarded by a
+presence check, so it belongs in the QA step (not the seed payload):
+
 ```bash
-contact_id="$(_seed_find_post_by_slug contact page)"
-# Only update if the shortcode is not already present
-if ! wp post get "$contact_id" --field=content | grep -q 'contact-form-7'; then
-  wp post update "$contact_id" \
-    --post_content="$(wp post get "$contact_id" --field=content)
+contact_id="$(wp-env run cli wp post list --post_type=page --name=contact --field=ID | head -n1)"
+form_id="$(wp-env run cli wp post list --post_type=wpcf7_contact_form --name=contact-form --field=ID | head -n1)"
+if ! wp-env run cli wp post get "$contact_id" --field=content | grep -q 'contact-form-7'; then
+  wp-env run cli wp post update "$contact_id" \
+    --post_content="$(wp-env run cli wp post get "$contact_id" --field=content)
 
 [contact-form-7 id=\"$form_id\" title=\"Contact form\"]"
 fi
@@ -64,14 +54,13 @@ fi
 ## WPForms (`wpforms-lite`)
 
 A WPForms form is a `wpforms` CPT post whose **`post_content` is the form JSON**
-(fields, settings, notifications). Seed by creating the post with the JSON body:
+(fields, settings, notifications). Seed it as a `posts[]` entry whose `content` is
+the form-definition JSON string (keep the `id` stable across runs):
 
-```bash
-form_id="$(ensure_post main-contact "Contact" ./forms/contact.wpforms.json wpforms)"
+```json
+{ "slug": "main-contact", "title": "Contact", "type": "wpforms",
+  "content": "{\"id\":\"1\",\"fields\":{…},\"settings\":{…}}" }
 ```
-
-where `./forms/contact.wpforms.json` is the WPForms form definition (a JSON
-object with `fields`, `settings`, `id`). Keep the `id` stable across runs.
 
 ## Guarded raw DB writes (last resort)
 
@@ -99,7 +88,7 @@ Rules:
 
 ## Idempotency summary
 
-- Form posts are keyed by slug via `ensure_post` → no duplicate forms on re-run.
-- Mail/settings meta written by `update_post_meta`/`ensure_acf_value` converge to
-  the same value, so re-runs are no-ops.
+- Form posts are keyed by slug → no duplicate forms on re-run.
+- Mail/settings meta are written by the runtime's WP-API call and compared
+  array-aware, so re-runs converge to the same value (`updated:0`).
 - Shortcode insertion is guarded by a `grep` presence check.

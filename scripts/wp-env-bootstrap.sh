@@ -57,6 +57,19 @@ main() {
     core_json="$(jq -n --arg v "$wp_version" '$v')"
   fi
 
+  # Mount the optimized source dir so the seed batch (seed-batch-runtime.php) can
+  # reach media by an absolute container path (red-team H1 / validated decision 1).
+  # Mapped at wp-content/uploads/wppm-src → host optimization.outputDir; the seed
+  # payload's mediaPathPrefix points at /var/www/html/wp-content/uploads/wppm-src/.
+  # Skipped when outputDir is unset or "." (mounting the whole project root is
+  # avoided; in that case rely on payload.mediaPathPrefix instead).
+  local outdir extra_mappings='{}'
+  outdir="$(wpbuild_get '.optimization.outputDir // empty')"
+  if [[ -n "$outdir" && "$outdir" != "null" && "$outdir" != "." ]]; then
+    extra_mappings="$(jq -n --arg src "$outdir" '{ "wp-content/uploads/wppm-src": $src }')"
+    _log "mounting optimized source '$outdir' → wp-content/uploads/wppm-src"
+  fi
+
   # ---- Render .wp-env.json -------------------------------------------------
   # Idempotent: regenerate from the manifest each run (manifest is source of truth).
   if [[ -f "$WPENV_FILE" && "$FORCE" != "--force" ]]; then
@@ -74,6 +87,7 @@ main() {
     --argjson port "$port" \
     --argjson debug "$debug" \
     --arg envtype "$env_type" \
+    --argjson extra "$extra_mappings" \
     '{
       core: $core,
       phpVersion: $php,
@@ -86,7 +100,7 @@ main() {
         WP_DEBUG_DISPLAY: false,
         WP_ENVIRONMENT_TYPE: $envtype
       },
-      mappings: ( { ($themedest): $theme } )
+      mappings: ( { ($themedest): $theme } + $extra )
     }' > "$tmp"
   mv "$tmp" "$WPENV_FILE"
   _log "wrote $WPENV_FILE (php=$php_version, port=$port, plugins=$(jq 'length' <<<"$plugins_json"))"

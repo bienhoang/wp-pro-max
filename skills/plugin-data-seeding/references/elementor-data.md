@@ -14,13 +14,17 @@ that JSON and writes the three required meta keys.
 | `_elementor_template_type` | `wp-page` | template kind (`wp-page` / `wp-post`) |
 | `_elementor_version` | e.g. `3.x.x` | optional; Elementor backfills on edit |
 
-Write via the idempotent helper:
+You do **not** write these keys individually — emit one `elementor[]` payload
+entry per page and the runtime sets the full meta set (`_elementor_data` wp_slash'd,
+`_elementor_edit_mode=builder`, `_elementor_template_type=wp-page`,
+`_elementor_version`):
 
-```bash
-ensure_acf_value "$home_id" _elementor_data         "$(cat ./elementor/home.json)"
-ensure_acf_value "$home_id" _elementor_edit_mode    builder
-ensure_acf_value "$home_id" _elementor_template_type wp-page
+```json
+{ "post": "home", "data": [ { "id": "a1b2c3d", "elType": "section", "elements": [ … ] } ] }
 ```
+
+`data` is the JSON layout array itself (not a string) — JSON escaping handles the
+quotes safely, so the old "escape JSON into a PHP literal" footgun is gone.
 
 ## The element tree shape
 
@@ -93,15 +97,16 @@ When in doubt, wrap the original markup in an `html` widget so nothing is lost.
 
 1. Build the tree per page into `./elementor/<slug>.json`.
 2. Validate it parses and is an array: `jq -e 'type=="array"' ./elementor/<slug>.json`.
-3. Minify on write (Elementor stores it slash-escaped; `wp post meta update`
-   handles the escaping when you pass the JSON string).
+3. Reference that tree as the `data` array of an `elementor[]` payload entry. The
+   runtime `wp_slash`es it on write (update_post_meta's wp_unslash cancels it), so
+   the stored JSON round-trips intact — no manual slash-escaping.
 4. After seeding all pages, regenerate CSS:
    `wp elementor flush-css` (if Elementor CLI present) — otherwise Elementor
    rebuilds CSS on first page view.
 
 ## Idempotency
 
-Because the three meta keys are written through `ensure_acf_value`, a re-run
-compares the stored JSON against the file and only updates on change. Keep the
-generated ids **stable** across runs (persist them in `./elementor/<slug>.json`)
-so unchanged pages produce byte-identical JSON and skip the write.
+The runtime compares the stored `_elementor_data` against the payload's `data`
+and only updates on change. Keep the generated ids **stable** across runs
+(persist them in `./elementor/<slug>.json`) so unchanged pages produce identical
+JSON and skip the write (`updated:0`).

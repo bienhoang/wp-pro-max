@@ -12,7 +12,7 @@ skills that operate on the optimized HTML copy before theme conversion.
 | 01 Foundation | plugin/marketplace manifests, manifest schema, manifest-lib.sh, contract docs | ✅ done |
 | 02 Intake & analysis | html-analysis, html-optimization, content-modeling, design-tokens, extract-tokens.mjs | ✅ done |
 | 03 Convert & scaffold | theme-conversion (3 backends), plugin-selection, wp-scaffold, wp-env-setup, wp-theme-developer, wp-env-bootstrap.sh | ✅ done |
-| 04 Data seeding | content-seeding, plugin-data-seeding, wp-data-engineer, seed-helpers.sh | ✅ done |
+| 04 Data seeding | content-seeding, plugin-data-seeding, wp-data-engineer, seed batch engine (seed-batch-runtime.php + seed-batch-run.sh + wp-cli-runner.sh; seed-helpers.sh deprecated shim) | ✅ done |
 | 05 Quality gates | wp-qa, wp-seo, wp-security, visual-diff.mjs | ✅ done |
 | 06 Ship | wp-ship (+3 runbooks), wp-deployer, migrate-urls.sh | ✅ done |
 | 07 Orchestration & docs | build/status/env commands, README, docs, sample site | ✅ done |
@@ -28,8 +28,11 @@ skills that operate on the optimized HTML copy before theme conversion.
 - `claude plugin validate .` passes.
 - All shell scripts `bash -n` clean; node scripts `node --check` clean.
 - `extract-tokens.mjs` extracts named colors/fonts/spacing from real CSS.
-- `manifest-lib.sh` + `seed-helpers.sh` source cleanly and run in **both bash and
-  zsh**; idempotent helpers exercised with a mocked WP-CLI.
+- `manifest-lib.sh`, `wp-cli-runner.sh`, and `seed-helpers.sh` source cleanly in
+  **both bash and zsh**. The seed batch engine is exercised by host stub tests
+  (`test/seeder/run.sh`) and a live wp-env acceptance run (`live-acceptance.sh`):
+  idempotent zero-dup re-run, fatal-safe partial-key flush, ACF/Elementor
+  round-trips, append+unique merge.
 - New site-editor scripts pass fixture-level TDD and an end-to-end integration
   test on `examples/sample-site`.
 

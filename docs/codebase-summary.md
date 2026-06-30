@@ -59,7 +59,10 @@ plans/               implementation plan + phases
 | plugin-scaffold.sh | scaffold a plugin + add feature classes | `bash … new` / `bash … add <feature>` |
 | plugin-env-bootstrap.sh | plugin-local .wp-env.json + wp-env start | `bash …` |
 | plugin-package.sh | allowlisted .zip builder | `bash …` |
-| seed-helpers.sh | idempotent create-if-missing WP-CLI | source OR `bash … <fn>` |
+| seed-batch-runtime.php | single PHP seed runtime; pure-JSON stdin → idempotent WP-API writes; sentinel summary | `wp eval-file … < payload.json` |
+| seed-batch-run.sh | seed driver: pipe payload → eval-file, parse sentinel summary, append+unique merge into `seed.*` | `bash … <payload.json>` |
+| wp-cli-runner.sh | resolve WP-CLI runner; bind this project's `*-cli-1` (not `*-tests-cli-1`) | sourced OR `bash … resolve` |
+| seed-helpers.sh | DEPRECATED shim (superseded by the batch engine; kept for the pending Woo plan) | source OR `bash … <fn>` |
 | extract-tokens.mjs | HTML/CSS → design tokens JSON | `node extract-tokens.mjs <glob…>` |
 | wp-env-bootstrap.sh | render .wp-env.json + wp-env start | `bash …` |
 | visual-diff.mjs | Playwright pixel diff WP vs source | `node visual-diff.mjs --source … --target …` |
@@ -78,9 +81,9 @@ plans/               implementation plan + phases
 | migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
 | validate-port.sh | frontmatter, link, and placeholder checks for ported skills/agents/commands | `bash scripts/validate-port.sh [file…]` |
 
-Both sourced libs (`manifest-lib.sh`, `seed-helpers.sh`) are **zsh- and
-bash-safe**: no source-time `set -e`, no zsh-reserved `status` var, shell-aware
-runner/array handling, and robust executed-vs-sourced detection.
+The sourced libs (`manifest-lib.sh`, `wp-cli-runner.sh`, `seed-helpers.sh`) are
+**zsh- and bash-safe**: no source-time `set -e`, no zsh-reserved `status`/`path`
+vars, shell-aware runner/array handling, and robust executed-vs-sourced detection.
 
 ## The manifests
 
