@@ -94,6 +94,11 @@ cd acme-widgets && /wp-pro-max:plugin add cpt
 /wp-pro-max:plugin lint
 /wp-pro-max:plugin test
 /wp-pro-max:plugin package
+
+# Run a best-practice audit on the active theme/plugin
+/wp-pro-max:audit
+/wp-pro-max:audit --scope all
+/wp-pro-max:audit --live
 ```
 
 Skills are also auto-invoked by name when relevant (`wp-pro-max:html-analysis`,
@@ -132,7 +137,7 @@ any custom plugin code.
 |---------|-------------|
 | `wp-pro-max` | Natural-language router — describe what you want and dispatch to the right command, skill, or agent. |
 | `build` | Run the full WP Pro Max pipeline — static HTML (or a brief) to a production WordPress site. |
-| `audit` | Scan the generated theme/plugin for a11y, security, performance, and code-style issues. |
+| `audit` | Run a best-practice audit (a11y, security, performance, code-style) on the active theme/plugin. |
 | `status` | Show the WP Pro Max build manifest and per-stage progress for the current project. |
 | `env` | Provision or manage the local wp-env WordPress environment for the current build. |
 | `init` | Scaffold a target WordPress project directory (inputs + `wp/` + starter `wp-build.json`). |
