@@ -21,5 +21,3 @@ wp-cli.local.yml
 *.sql
 *.wpress
 !docs/**/*.sql
-plans/
-docs/

@@ -1,0 +1,173 @@
+{
+  "version": "1",
+  "project": {
+    "name": "Site Editor Fixture",
+    "themeSlug": "site-editor-fixture",
+    "textDomain": "site-editor-fixture"
+  },
+  "strategy": "classic-acf",
+  "source": {
+    "type": "html-files",
+    "htmlPaths": ["./source"],
+    "assetDirs": ["./assets"],
+    "briefPath": "./requirements/brief.md"
+  },
+  "analysis": {
+    "pages": [
+      {
+        "path": "index.html",
+        "title": "Home",
+        "role": "home",
+        "sections": ["hero", "services"]
+      }
+    ],
+    "components": [],
+    "assets": {
+      "images": [],
+      "fonts": [],
+      "scripts": [],
+      "styles": []
+    },
+    "informationArchitecture": []
+  },
+  "optimization": {
+    "outputDir": "./.wp-pro-max/optimized",
+    "imagePlan": [],
+    "a11yFixes": [],
+    "notes": []
+  },
+  "contentModel": {
+    "postTypes": [],
+    "taxonomies": [],
+    "fieldGroups": [],
+    "menus": [
+      {
+        "name": "Primary",
+        "location": "primary",
+        "items": []
+      }
+    ]
+  },
+  "designTokens": {
+    "colors": [
+      { "name": "brand", "value": "#0f766e" }
+    ],
+    "fonts": [
+      { "name": "body", "family": "Inter, sans-serif" }
+    ],
+    "spacing": [],
+    "breakpoints": {},
+    "radius": []
+  },
+  "plugins": [],
+  "theme": {
+    "path": "wp-content/themes/site-editor-fixture",
+    "files": [],
+    "templateMap": {}
+  },
+  "seed": {
+    "contentScript": "",
+    "pluginDataScript": "",
+    "idempotencyKeys": [],
+    "lastRun": ""
+  },
+  "i18n": {
+    "enabled": false,
+    "locales": ["vi", "en", "ja"],
+    "defaultLocale": "vi",
+    "plugin": "none"
+  },
+  "qa": {
+    "visualDiff": [],
+    "tolerance": 0.05,
+    "brokenLinks": [],
+    "a11y": {},
+    "coreWebVitals": {},
+    "passed": true
+  },
+  "seo": {
+    "metaApplied": false,
+    "schemaTypes": [],
+    "sitemap": false
+  },
+  "security": {
+    "hardeningApplied": [],
+    "vulnScan": {}
+  },
+  "env": {
+    "port": 8888,
+    "phpVersion": "8.2",
+    "wpVersion": "latest",
+    "localUrl": "http://localhost:8888"
+  },
+  "urls": {
+    "local": "http://localhost:8888",
+    "production": ""
+  },
+  "deploy": {
+    "target": "manual",
+    "host": "",
+    "path": "",
+    "lastDeploy": "",
+    "rollbackPoint": ""
+  },
+  "progress": {
+    "analyze": { "status": "done", "updatedAt": "2026-06-27T10:00:00Z", "notes": "" },
+    "optimize": { "status": "done", "updatedAt": "2026-06-27T10:00:00Z", "notes": "" }
+  },
+  "siteEditor": {
+    "redesign": {
+      "appliedChanges": [
+        {
+          "page": "index.html",
+          "action": "reorder",
+          "sections": ["services", "hero"],
+          "timestamp": "2026-06-27T10:05:00Z"
+        }
+      ],
+      "backupDir": "./.wp-pro-max/optimized-backup/20260627-100500",
+      "lastModified": "2026-06-27T10:05:00Z",
+      "canRevert": true
+    },
+    "contentEnrichment": {
+      "addedPages": [
+        {
+          "path": "contact.html",
+          "title": "Contact",
+          "role": "page",
+          "source": "brief"
+        }
+      ],
+      "changes": [
+        {
+          "page": "index.html",
+          "type": "alt-text",
+          "count": 3,
+          "timestamp": "2026-06-27T10:06:00Z"
+        }
+      ],
+      "lastModified": "2026-06-27T10:06:00Z"
+    },
+    "preConversionQa": {
+      "passed": true,
+      "mode": "quick",
+      "a11y": {
+        "passed": true,
+        "violations": []
+      },
+      "responsive": {
+        "passed": true,
+        "viewports": []
+      },
+      "brandConsistency": {
+        "passed": true,
+        "mismatches": []
+      },
+      "htmlValidity": {
+        "passed": true,
+        "errors": []
+      },
+      "lastRun": "2026-06-27T10:07:00Z"
+    }
+  }
+}
