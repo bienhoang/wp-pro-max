@@ -4,11 +4,25 @@ A Claude Code **plugin** (kit of skills + agents + commands) that turns static
 HTML — or a requirements brief — into a **production WordPress site**, fast and
 accurately. It drives a resumable, idempotent pipeline:
 
-```
-analyze HTML → optimize → model content → extract design tokens → convert theme
-(adaptive) → select plugins → scaffold code → seed content → seed plugin data →
-i18n → SEO → security → QA → ship → handoff
-```
+| Step | Description | Agent | Skill |
+|------|-------------|-------|-------|
+| Analyze HTML | Detect page roles, components, asset inventory, IA, and recommend a theme strategy. | — | `html-analysis` |
+| Optimize | Clean, dedupe, and semanticize markup/CSS; plan image optimization without mutating originals. | — | `html-optimization` |
+| Model content | Turn repeated structures into CPTs, taxonomies, field groups, and menu trees. | `wp-theme-developer` | `content-modeling` |
+| Extract design tokens | Derive color, typography, spacing, and breakpoint tokens for `theme.json` / CSS. | `wp-theme-developer` | `design-tokens` |
+| Convert theme (adaptive) | Build a classic ACF, block FSE, or page-builder theme from the analyzed source. | `wp-theme-developer` | `theme-conversion` |
+| Select plugins | Pick the minimal plugin set and pin slugs into `.wp-env.json`. | — | `plugin-selection` |
+| Scaffold code | Wire `functions.php`, registrations, ACF JSON/block bindings, menus, assets, image sizes. | `wp-theme-developer` | `wp-scaffold` |
+| Seed content | Create pages/posts, import media, build menus, and set the front page from optimized HTML. | `wp-data-engineer` | `content-seeding` |
+| Seed plugin data | Fill ACF values, builder postmeta, and form configuration after content exists. | `wp-data-engineer` | `plugin-data-seeding` |
+| i18n | Make the theme translation-ready (`.pot`) and configure multilingual content (vi/en/ja). | `wp-theme-developer`, `wp-data-engineer` | `wp-i18n` |
+| SEO | Set meta titles/descriptions, Open Graph, schema, canonicals, robots, and sitemap. | `wp-theme-developer` | `wp-seo` |
+| Security | Harden WordPress and scan core/plugins/themes/secrets for vulnerabilities. | `wp-deployer` | `wp-security` |
+| QA | Gate ship with visual diff, responsive checks, broken-link crawl, a11y, and Core Web Vitals. | `wp-theme-developer` | `wp-qa` |
+| Ship | Backup, push theme/wp-content, migrate DB, URL search-replace, smoke-test, and record rollback. | `wp-deployer` | `wp-ship` |
+| Handoff | Generate client handbook, credentials template, maintenance runbook, and update strategy. | `wp-deployer` | `wp-handoff` |
+
+_Agents are spawned for heavy authoring; stages marked `—` are executed directly by their skill._
 
 ## Why
 
@@ -112,17 +126,59 @@ any custom plugin code.
 
 ## Components
 
-**Commands** — `build` (orchestrator), `status`, `env`, `init`, `plugin`, `a11y-audit`, `figma`, `component`.
+### Commands
 
-**Skills (23)** — `html-analysis`, `html-optimization`, `accessibility`,
-`wp-a11y`, `content-modeling`, `design-tokens`, `theme-conversion`,
-`plugin-selection`, `wp-scaffold`, `wp-env-setup`, `content-seeding`,
-`plugin-data-seeding`, `wp-i18n` (vi/en/ja), `wp-seo`, `wp-security`, `wp-qa`,
-`wp-ship`, `wp-handoff`, `wp-plugin-dev`, `wp-plugin-development`, `wp-classic`,
-`wp-performance-backend`, `figma-bridge`.
+| Command | Description |
+|---------|-------------|
+| `wp-pro-max` | Natural-language router — describe what you want and dispatch to the right command, skill, or agent. |
+| `build` | Run the full WP Pro Max pipeline — static HTML (or a brief) to a production WordPress site. |
+| `status` | Show the WP Pro Max build manifest and per-stage progress for the current project. |
+| `env` | Provision or manage the local wp-env WordPress environment for the current build. |
+| `init` | Scaffold a target WordPress project directory (inputs + `wp/` + starter `wp-build.json`). |
+| `plugin` | Build a standalone WordPress plugin from scratch — scaffold, add features, lint, test, and package. |
+| `a11y-audit` | WCAG 2.2 AA accessibility audit on a specific theme file or the entire active theme. |
+| `figma` | Analyze a Figma node and extract design specs mapped to the project's design tokens. |
+| `component` | Create a new UI component from a Figma design or component name. |
+| `site-editor` | Edit the optimized HTML copy before conversion: redesign, add/enrich pages, pre-conversion QA. |
 
-**Agents (6)** — `wp-theme-developer`, `wp-data-engineer`, `wp-deployer`,
-`wp-plugin-developer`, `a11y-checker`, `figma-analyzer`.
+### Skills (23)
+
+| Skill | Description |
+|-------|-------------|
+| `html-analysis` | Analyze static HTML/CSS/JS (or URL/brief) and recommend a theme strategy. |
+| `html-optimization` | Clean, dedupe, and semanticize markup/CSS; plan image optimization. |
+| `accessibility` | Accessibility audit and remediation guide; produces checklist + known issues. |
+| `wp-a11y` | Condensed WCAG 2.2 AA rule reference used by the `a11y-checker` agent. |
+| `content-modeling` | Derive CPTs, taxonomies, field groups, and menus from analyzed HTML. |
+| `design-tokens` | Extract color, typography, spacing, and breakpoint tokens from source CSS. |
+| `theme-conversion` | Convert analyzed HTML into a classic ACF, block FSE, or page-builder theme. |
+| `plugin-selection` | Select the minimal plugin set and pin slugs into `.wp-env.json`. |
+| `wp-scaffold` | Wire `functions.php`, registrations, ACF JSON/block bindings, menus, assets. |
+| `wp-env-setup` | Provision the local Docker WordPress environment (`wp-env`). |
+| `content-seeding` | Seed pages, posts, media, menus, and front-page settings from optimized HTML. |
+| `plugin-data-seeding` | Seed ACF values, builder postmeta, and form config after content exists. |
+| `wp-i18n` | Make the theme translation-ready (`.pot`) and configure multilingual data (vi/en/ja). |
+| `wp-seo` | Apply meta, Open Graph, schema, canonicals, robots, and sitemap. |
+| `wp-security` | Harden WordPress and scan core/plugins/themes/secrets for vulnerabilities. |
+| `wp-qa` | Quality gate: visual diff, responsive checks, broken links, a11y, Core Web Vitals. |
+| `wp-ship` | Ship the local wp-env build to a production host/VPS with backup + rollback. |
+| `wp-handoff` | Generate client handbook, credentials template, maintenance runbook, update strategy. |
+| `wp-plugin-dev` | Scaffold and build a standalone plugin (`new`, `add`, `lint`, `test`, `package`). |
+| `wp-plugin-development` | Always-active guidance for secure, maintainable plugin development. |
+| `wp-classic` | Conventions and reference for classic PHP + ACF themes. |
+| `wp-performance-backend` | Diagnose and optimize backend performance (TTFB, queries, cache, cron, HTTP). |
+| `figma-bridge` | Translate Figma designs into WordPress code using project design tokens. |
+
+### Agents
+
+| Agent | Description |
+|-------|-------------|
+| `wp-theme-developer` | Expert WordPress theme developer (PHP templates, `theme.json`, ACF, block patterns). |
+| `wp-data-engineer` | Expert WordPress data engineer (idempotent seeding, WP-CLI, safe DB ops). |
+| `wp-deployer` | Expert WordPress deployment/migration engineer (ship, search-replace, rollback). |
+| `wp-plugin-developer` | Expert WordPress plugin developer (secure, WPCS-compliant standalone plugins). |
+| `a11y-checker` | Scans theme templates and CSS for WCAG 2.2 AA accessibility issues. |
+| `figma-analyzer` | Analyzes Figma designs and extracts specs mapped to project design tokens. |
 
 **Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
 `extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
