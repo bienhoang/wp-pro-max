@@ -1,6 +1,6 @@
 ---
 description: Edit the optimized HTML copy before WordPress conversion. Redesign sections, add/enrich pages, and run pre-conversion UI/UX QA.
-argument-hint: [--redesign <instructions> [--page <path>]] [--add-pages <page-list>|--from-brief] [--enrich <instructions>] [--approve] [--check [--quick|--thorough]] [--preview] [--revert] [--all]
+argument-hint: "[--redesign <instructions> [--page <path>]] [--add-pages <page-list>|--from-brief] [--enrich <instructions>] [--approve] [--check [--quick|--thorough]] [--preview] [--revert] [--all]"
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Task, Skill]
 ---
 

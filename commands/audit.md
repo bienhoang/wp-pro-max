@@ -1,6 +1,6 @@
 ---
 description: Run a best-practice audit on the current WP Pro Max target project. Checks a11y, security, performance, and code-style / WordPress conventions, then writes a report plus an audit entry into wp-build.json.
-argument-hint: [--scope self|all] [--live|--static] [--format md|json|both] [--out <dir>]
+argument-hint: "[--scope self|all] [--live|--static] [--format md|json|both] [--out <dir>]"
 allowed-tools: [Read, Bash, Skill]
 ---
 
