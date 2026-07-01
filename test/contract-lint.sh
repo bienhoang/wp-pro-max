@@ -46,13 +46,14 @@ warn() { printf '  \033[1;33mWARN\033[0m %s\n' "$*"; WARNS=$((WARNS + 1)); }
 ok()   { printf '  \033[0;32mok\033[0m   %s\n' "$*"; }
 
 # walk <ext> — files with extension <ext>, excluding dependency/VCS trees and the
-# historical plans/ + reports/ working-doc trees (not the shipped instruction
-# surface). Shared shape with test/run.sh's walk().
+# historical narrative trees (plans/, reports/, docs/journals/) — finding-log /
+# retrospective prose, not the shipped instruction surface. Shared shape with
+# test/run.sh's walk().
 walk() {
   local ext="$1"
   find . \
     \( -path './node_modules' -o -path './vendor' -o -path './.git' \
-       -o -path './plans' -o -path './reports' \
+       -o -path './plans' -o -path './reports' -o -path './docs/journals' \
        -o -path '*/node_modules' -o -path '*/vendor' -o -path '*/.git' \) -prune \
     -o -type f -name "*.${ext}" -print
 }
