@@ -178,10 +178,10 @@ Use `inc/enqueue.php` for front-end assets:
 defined( 'ABSPATH' ) || exit;
 
 function acme_enqueue_assets() {
-    $version = wp_get_theme()->get( 'Version' );
-    wp_enqueue_style( 'acme-style', get_stylesheet_uri(), array(), $version );
-    wp_enqueue_style( 'acme-main', get_theme_file_uri( 'assets/css/main.css' ), array( 'acme-style' ), $version );
-    wp_enqueue_script( 'acme-main', get_theme_file_uri( 'assets/js/main.js' ), array(), $version, true );
+    // filemtime() cache-busts on every edit; a static theme version would keep serving the browser's cached copy.
+    wp_enqueue_style( 'acme-style', get_stylesheet_uri(), array(), filemtime( get_theme_file_path( 'style.css' ) ) );
+    wp_enqueue_style( 'acme-main', get_theme_file_uri( 'assets/css/main.css' ), array( 'acme-style' ), filemtime( get_theme_file_path( 'assets/css/main.css' ) ) );
+    wp_enqueue_script( 'acme-main', get_theme_file_uri( 'assets/js/main.js' ), array(), filemtime( get_theme_file_path( 'assets/js/main.js' ) ), true );
 }
 add_action( 'wp_enqueue_scripts', 'acme_enqueue_assets' );
 ```
@@ -432,18 +432,19 @@ the JS in lockstep with the registry.
 ```
 
 Enqueue both from `inc/enqueue.php`, localizing the registry so the JS stays in
-sync (use `wp_get_theme()->get( 'Version' )` for cache-busting — do not assume an
-`ACME_VERSION` constant exists in the enqueue context):
+sync (use `filemtime( get_theme_file_path( ... ) )` per file for cache-busting —
+a static theme version would keep serving a stale cached copy after edits; do
+not assume an `ACME_VERSION` constant exists in the enqueue context):
 
 ```php
 add_action( 'customize_preview_init', function () {
-	$ver = wp_get_theme()->get( 'Version' );
-	wp_enqueue_script( 'acme-customizer-preview', get_theme_file_uri( 'assets/js/customizer-preview.js' ), array( 'customize-preview' ), $ver, true );
+	$file = get_theme_file_path( 'assets/js/customizer-preview.js' );
+	wp_enqueue_script( 'acme-customizer-preview', get_theme_file_uri( 'assets/js/customizer-preview.js' ), array( 'customize-preview' ), filemtime( $file ), true );
 	wp_localize_script( 'acme-customizer-preview', 'AcmeCustomizer', array( 'tokens' => acme_color_tokens() ) );
 } );
 add_action( 'customize_controls_enqueue_scripts', function () {
-	$ver = wp_get_theme()->get( 'Version' );
-	wp_enqueue_script( 'acme-customizer-controls', get_theme_file_uri( 'assets/js/customizer-controls.js' ), array( 'customize-controls', 'jquery' ), $ver, true );
+	$file = get_theme_file_path( 'assets/js/customizer-controls.js' );
+	wp_enqueue_script( 'acme-customizer-controls', get_theme_file_uri( 'assets/js/customizer-controls.js' ), array( 'customize-controls', 'jquery' ), filemtime( $file ), true );
 	wp_localize_script( 'acme-customizer-controls', 'AcmeCustomizer', array( 'tokens' => acme_color_tokens() ) );
 } );
 ```

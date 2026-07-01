@@ -72,8 +72,9 @@ function acme_setup() {
 add_action( 'after_setup_theme', 'acme_setup' );
 
 function acme_enqueue_assets() {
-	wp_enqueue_style( 'acme-style', get_stylesheet_uri(), array(), '1.0.0' );
-	wp_enqueue_style( 'acme-main', get_theme_file_uri( 'assets/css/main.css' ), array(), '1.0.0' );
+	// filemtime() cache-busts on every edit; a static version would keep serving the browser's cached copy.
+	wp_enqueue_style( 'acme-style', get_stylesheet_uri(), array(), filemtime( get_theme_file_path( 'style.css' ) ) );
+	wp_enqueue_style( 'acme-main', get_theme_file_uri( 'assets/css/main.css' ), array(), filemtime( get_theme_file_path( 'assets/css/main.css' ) ) );
 }
 add_action( 'wp_enqueue_scripts', 'acme_enqueue_assets' );
 ```
