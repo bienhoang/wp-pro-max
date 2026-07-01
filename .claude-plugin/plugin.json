@@ -1,7 +1,7 @@
 {
   "name": "wp-pro-max",
   "displayName": "WP Pro Max",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "End-to-end pipeline that converts static HTML (or a brief) into a production WordPress site: analyze → optimize → convert theme (adaptive) → select plugins → scaffold → seed content & plugin data → QA → SEO → security → i18n → ship.",
   "author": {
     "name": "Netko Solution",
