@@ -70,7 +70,10 @@ wp-pro-max/
 │   ├── plugin-env-bootstrap.sh  # plugin-local wp-env
 │   ├── plugin-scaffold.sh       # plugin skeleton + feature generators
 │   ├── plugin-package.sh        # allowlisted .zip builder
-│   ├── seed-helpers.sh          # idempotent create-if-missing helpers
+│   ├── seed-batch-runtime.php   # single PHP seed runtime (JSON stdin → WP API)
+│   ├── seed-batch-run.sh        # seed driver (eval-file + sentinel summary merge)
+│   ├── wp-cli-runner.sh         # resolve WP-CLI runner (binds this project's cli)
+│   ├── seed-helpers.sh          # DEPRECATED shim (superseded by the batch engine)
 │   ├── extract-tokens.mjs       # HTML/CSS → design tokens JSON
 │   ├── visual-diff.mjs          # Playwright pixel diff (WP vs source)
 │   └── migrate-urls.sh          # wp search-replace wrapper
@@ -128,8 +131,9 @@ Single source of truth written to the **target** project root. Carries:
   call shared scripts, and delegate heavy code/data/deploy work to **agents**.
 - **Orchestrator command** runs stages in order with user gates (full mode) and
   records progress so a run can resume from any stage.
-- **wp-env** provides reproducible WordPress; all WP-CLI runs go through
-  `wp-env run cli wp …`. Theme/plugin mounted via `.wp-env.json` `mappings`.
+- **wp-env** provides reproducible WordPress; skill/agent prose runs WP-CLI through
+  `wpx` (`scripts/wpx.sh`: fast `docker exec`, `wp-env run cli wp` fallback).
+  Theme/plugin mounted via `.wp-env.json` `mappings`.
 - **Standalone plugin builder** (`/wp-pro-max:plugin`) is a separate, opt-in
   capability. It uses `wp-plugin.json`, its own `plugin-scaffold.sh`, and a
   plugin-local `.wp-env.json`. It no-ops inside a theme build to avoid colliding

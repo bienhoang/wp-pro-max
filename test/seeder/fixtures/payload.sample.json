@@ -1,0 +1,40 @@
+{
+  "options": {
+    "blogname": "Acme Studio",
+    "permalink_structure": "/%postname%/"
+  },
+  "media": [
+    { "file": "assets/images/hero.jpg", "title": "hero" }
+  ],
+  "posts": [
+    {
+      "slug": "home",
+      "title": "Home",
+      "type": "page",
+      "template": "front-page.php",
+      "content": "<h1>Welcome</h1><p>Design that ships — with \"quotes\" & ampersands.</p>",
+      "meta": {},
+      "featured": "hero"
+    },
+    {
+      "slug": "about",
+      "title": "About",
+      "type": "page",
+      "content": "<h1>About</h1><p>Who we are.</p>"
+    }
+  ],
+  "terms": [
+    { "tax": "service_cat", "name": "Design", "slug": "design" }
+  ],
+  "menus": [
+    {
+      "name": "Primary",
+      "location": "primary",
+      "items": [
+        { "post": "home", "title": "Home" },
+        { "post": "about", "title": "About" }
+      ]
+    }
+  ],
+  "frontPage": "home"
+}

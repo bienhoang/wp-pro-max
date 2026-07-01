@@ -32,7 +32,7 @@ add_action( 'after_setup_theme', function () {
 
 ```bash
 TD=your-text-domain; THEME=wp-content/themes/your-theme
-wp-env run cli wp i18n make-pot "$THEME" "$THEME/languages/$TD.pot" --domain="$TD"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" i18n make-pot "$THEME" "$THEME/languages/$TD.pot" --domain="$TD"
 ```
 
 Sample header:
@@ -60,7 +60,7 @@ for L in vi en_US ja; do
     || cp "$TD.pot" "$TD-$L.po"
 done
 # ...translate the .po files (msgstr), then compile:
-wp-env run cli wp i18n make-mo "$THEME/languages"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" i18n make-mo "$THEME/languages"
 ```
 
 ## Japanese (ja) specifics

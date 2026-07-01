@@ -27,7 +27,7 @@ Two jobs, run in order:
    three languages, set language on the seeded posts/pages, link translations,
    and add a language switcher. → `references/multilingual-data.md`
 
-All WordPress CLI runs go through wp-env: `wp-env run cli wp <command>`.
+All WordPress CLI runs go through `wpx`: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" <command>` (fast `docker exec`, with a transparent wp-env fallback).
 
 ## Inputs (from `wp-build.json`)
 
@@ -101,7 +101,7 @@ string-length layout slack, is in `references/translation-ready.md`.
 
 ```bash
 mkdir -p "$THEME/languages"
-wp-env run cli wp i18n make-pot "wp-content/themes/$(basename "$THEME")" \
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" i18n make-pot "wp-content/themes/$(basename "$THEME")" \
   "wp-content/themes/$(basename "$THEME")/languages/${TD}.pot" \
   --domain="$TD" --skip-audit
 wpbuild_set '.i18n.potPath' "\"languages/${TD}.pot\""
@@ -143,13 +143,13 @@ All commands are idempotent (`wp pll` checks before create, `wp eval` guards) an
 run through wp-env. Minimal Polylang bootstrap:
 
 ```bash
-wp-env run cli wp plugin install polylang --activate
-wp-env run cli wp pll lang list >/dev/null 2>&1 || true   # ensure CLI present
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin install polylang --activate
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang list >/dev/null 2>&1 || true   # ensure CLI present
 # create vi (default) first, then en, then ja  — full block in the reference
-wp-env run cli wp pll lang create Vietnamese vi vi          # name slug locale
-wp-env run cli wp pll lang create English    en en_US
-wp-env run cli wp pll lang create 日本語       ja ja
-wp-env run cli wp pll option default_lang vi
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang create Vietnamese vi vi          # name slug locale
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang create English    en en_US
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll lang create 日本語       ja ja
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" pll option default_lang vi
 ```
 
 ## 4. Record outputs

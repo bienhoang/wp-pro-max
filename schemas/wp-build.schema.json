@@ -149,7 +149,25 @@
       "type": "object",
       "description": "Output of design-tokens. Feeds theme.json / CSS variables.",
       "properties": {
-        "colors": { "type": "array", "items": { "type": "object" } },
+        "colors": {
+          "type": "array",
+          "description": "Curated color tokens. Each entry's `slug` derives the emitted `--color-<slug>` :root var (verbatim, no abbreviation) and feeds the theme-customization registry. `value` is the default color.",
+          "items": {
+            "type": "object",
+            "required": ["slug", "value"],
+            "additionalProperties": true,
+            "properties": {
+              "name": { "type": "string" },
+              "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+              "value": {
+                "type": "string",
+                "description": "Hex (#rgb/#rgba/#rrggbb/#rrggbbaa), rgb()/rgba(), or hsl()/hsla(). Char class mirrors the theme's function-color sanitizer so values are safe to emit into :root statically.",
+                "pattern": "^(#[0-9a-fA-F]{3,4}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|rgba?\\([0-9.,%/\\sdega]*\\)|hsla?\\([0-9.,%/\\sdega]*\\))$"
+              },
+              "role": { "type": "string" }
+            }
+          }
+        },
         "fonts": { "type": "array", "items": { "type": "object" } },
         "spacing": { "type": "array", "items": { "type": "object" } },
         "breakpoints": { "type": "object" },
@@ -180,6 +198,13 @@
         "templateMap": {
           "type": "object",
           "description": "source HTML page -> WP template file."
+        },
+        "customization": {
+          "type": "object",
+          "description": "End-user branding customization (logos + colors + reset) baked into the theme by scaffold. Registry lives in-theme; this flag only gates the feature.",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true }
+          }
         }
       }
     },

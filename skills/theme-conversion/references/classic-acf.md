@@ -25,10 +25,20 @@ single-<cpt>.php archive-<cpt>.php   # per custom post type
 template-parts/
   hero.php  card.php  cta.php  section.php   # from analysis.components[]
 acf-json/                 # ACF field-group JSON (populated by scaffold stage)
+inc/
+  customizer.php          # Branding & Colors Customizer (authored by scaffold)
+  class-acme-reset-control.php   # reset button control (scaffold)
 assets/
   css/  js/  images/      # optimized assets copied from optimization.outputDir
+  js/customizer-preview.js  js/customizer-controls.js   # Customizer (scaffold)
 screenshot.png
 ```
+
+> `convert` authors the **guarded `<slug>_the_footer_logo()` helper** (in
+> `functions.php`) and the `footer.php` render slot; `scaffold` authors the
+> `inc/customizer.php` + JS that set the mods. See
+> `skills/wp-scaffold/references/theme-customization.md` and the Customizer
+> section of `references/classic-acf.md`.
 
 Map: each `analysis.pages[]` → a template above; record in `theme.templateMap`.
 Each repeated `analysis.components[]` → a `template-parts/<kind>.php` rendered via
@@ -53,11 +63,13 @@ License: GPL-2.0-or-later
 */
 
 :root {
-  /* designTokens.colors[] -> --color-<slug> */
+  /* designTokens.colors[] -> --color-<slug> VERBATIM (no abbreviation:
+     foreground -> --color-foreground, NOT --color-fg). The theme-customization
+     registry + Customizer + reset all read this exact var name. */
   --color-primary: #1a73e8;
   --color-secondary: #34a853;
-  --color-text: #202124;
-  --color-bg: #ffffff;
+  --color-foreground: #202124;
+  --color-background: #ffffff;
   /* designTokens.fonts[] -> --font-<role> */
   --font-heading: "Poppins", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
@@ -72,6 +84,15 @@ License: GPL-2.0-or-later
 
 The full compiled stylesheet (layout + component CSS adapted from source) goes in
 `assets/css/main.css` and is enqueued; keep `style.css` to the header + `:root`.
+
+> **Reset hazard — `main.css` must be `:root`-color-free.** `main.css` enqueues
+> *after* `style.css`, so any `:root { --color-* }` redeclaration there wins the
+> cascade and "Reset to defaults" would revert to that raw source color, not the
+> token default. When adapting source CSS into `main.css`, **strip every `:root`
+> color var** (move them to `style.css` above, deduped). This is a hard contract
+> the theme-customization reset depends on. The inline-CSS style handle is
+> `<slug>-main` (the enqueued `main.css` handle) — the customizer emitter attaches
+> its `:root` override to it.
 
 ## functions.php (minimal in convert; scaffold extends)
 
@@ -120,6 +141,34 @@ function acme_enqueue_assets() {
 	wp_enqueue_script( 'acme-main', get_theme_file_uri( 'assets/js/main.js' ), array(), ACME_VERSION, true );
 }
 add_action( 'wp_enqueue_scripts', 'acme_enqueue_assets' );
+
+/**
+ * Footer logo render helper — DEFINED IN CONVERT (foundation) so an
+ * activated-but-not-yet-scaffolded theme never fatals. Scaffold adds the
+ * Customizer control that sets `acme_footer_logo`. Fallback chain:
+ * uploaded footer logo (attachment ID) → header/site logo → site title.
+ */
+if ( ! function_exists( 'acme_the_footer_logo' ) ) {
+	function acme_the_footer_logo() {
+		$id = absint( get_theme_mod( 'acme_footer_logo', 0 ) );
+		if ( $id && wp_get_attachment_image( $id, 'full' ) ) {
+			printf(
+				'<span class="footer-logo">%s</span>',
+				wp_get_attachment_image( $id, 'full', false, array( 'class' => 'footer-logo__img' ) )
+			);
+			return;
+		}
+		if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
+			the_custom_logo();
+			return;
+		}
+		printf(
+			'<a class="site-title" href="%1$s" rel="home">%2$s</a>',
+			esc_url( home_url( '/' ) ),
+			esc_html( get_bloginfo( 'name' ) )
+		);
+	}
+}
 
 /**
  * Tell ACF to load/save field groups from the theme's acf-json/ directory.
@@ -203,6 +252,9 @@ add_filter( 'acf/settings/load_json', function ( $paths ) {
 </main><!-- #main -->
 
 <footer class="site-footer" role="contentinfo">
+	<div class="site-branding site-branding--footer">
+		<?php acme_the_footer_logo(); // guarded helper defined in functions.php (convert) ?>
+	</div>
 	<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer', 'acme' ); ?>">
 		<?php
 		wp_nav_menu(
@@ -444,8 +496,11 @@ load/save filters (above). Example shape the scaffold stage emits
 ## Build order
 
 1. Create dirs + `style.css` header with `:root` tokens.
-2. Write `functions.php` (supports, menus, enqueue, ACF json point).
-3. `header.php`, `footer.php`, `index.php`.
+2. Write `functions.php` (supports, menus, enqueue, ACF json point, **guarded
+   `<slug>_the_footer_logo()` helper**). Keep `:root` color vars out of
+   `main.css` (reset hazard — see the `:root` note above).
+3. `header.php`, `footer.php` (footer calls `<slug>_the_footer_logo()`),
+   `index.php`.
 4. Page templates per `analysis.pages[].role` → record template map.
 5. `template-parts/*` per `analysis.components[]`.
 6. Copy optimized assets from `optimization.outputDir` into `assets/`.

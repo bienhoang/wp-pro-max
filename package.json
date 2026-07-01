@@ -7,7 +7,10 @@
     "validate": "claude plugin validate ."
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "cheerio": "^1.0.0",
-    "playwright": "^1.45.0"
+    "pixelmatch": "^7.2.0",
+    "playwright": "^1.45.0",
+    "pngjs": "^7.0.0"
   }
 }

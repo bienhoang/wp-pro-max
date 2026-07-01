@@ -39,7 +39,8 @@ stage can be re-run safely or resumed.
   Classic PHP + ACF, Block theme (FSE / `theme.json`), or Page Builder
   (Elementor / Bricks).
 - **wp-env first** — all build/seed/QA runs against reproducible Docker WordPress;
-  WP-CLI via `wp-env run cli wp …`.
+  WP-CLI via `wpx` (`scripts/wpx.sh`): a fast `docker exec` into the live
+  container, with a transparent `wp-env run cli wp` fallback.
 - **Safety** — idempotent seeding (check-before-create), guarded DB writes
   (dry-run first), QA gate before ship, backup + rollback on every deploy.
 
@@ -181,7 +182,7 @@ any custom plugin code.
 | Agent | Description |
 |-------|-------------|
 | `wp-theme-developer` | Expert WordPress theme developer (PHP templates, `theme.json`, ACF, block patterns). |
-| `wp-data-engineer` | Expert WordPress data engineer (idempotent seeding, WP-CLI, safe DB ops). |
+| `wp-data-engineer` | Expert WordPress data engineer — authors the idempotent seed JSON payload (the skill runs the batch inline via `wp eval-file`), WP-CLI, safe DB ops. |
 | `wp-deployer` | Expert WordPress deployment/migration engineer (ship, search-replace, rollback). |
 | `wp-plugin-developer` | Expert WordPress plugin developer (secure, WPCS-compliant standalone plugins). |
 | `a11y-checker` | Scans theme templates and CSS for WCAG 2.2 AA accessibility issues. |
@@ -189,8 +190,10 @@ any custom plugin code.
 
 **Scripts** — `manifest-core.sh`, `manifest-lib.sh`, `plugin-manifest-lib.sh`,
 `extract-tokens.mjs`, `wp-env-bootstrap.sh`, `plugin-env-bootstrap.sh`,
-`plugin-scaffold.sh`, `plugin-package.sh`, `seed-helpers.sh`, `visual-diff.mjs`,
-`migrate-urls.sh`, `audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
+`plugin-scaffold.sh`, `plugin-package.sh`, the seed batch engine
+(`seed-batch-runtime.php`, `seed-batch-run.sh`, `wp-cli-runner.sh`),
+`seed-helpers.sh` (deprecated shim), `visual-diff.mjs`, `migrate-urls.sh`,
+`audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
 
 ## Docs
 

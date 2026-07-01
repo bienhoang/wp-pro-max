@@ -31,7 +31,7 @@ Read `wp-build.json` to identify:
 If `env.localUrl` is missing, discover the URL with:
 
 ```bash
-npx wp-env run cli wp option get home
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get home
 ```
 
 All WP-CLI examples below are written for `wp-env`. Run them from the project root.
@@ -48,13 +48,13 @@ All WP-CLI examples below are written for `wp-env`. Run them from the project ro
 
 ```bash
 # Discover the local URL.
-LOCAL_URL=$(npx wp-env run cli wp option get home)
+LOCAL_URL=$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get home)
 
 # Measure TTFB with curl.
 curl -o /dev/null -s -w "TTFB: %{time_starttransfer}s\nTotal: %{time_total}s\n" "$LOCAL_URL/sample-page/"
 
 # WP-CLI profile stage breakdown (requires wp-cli/profile-command).
-npx wp-env run cli wp profile stage --url="$LOCAL_URL/sample-page/"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" profile stage --url="$LOCAL_URL/sample-page/"
 ```
 
 Store the numbers so you can compare after fixes.
@@ -64,7 +64,7 @@ Store the numbers so you can compare after fixes.
 If the `wp doctor` command is available:
 
 ```bash
-npx wp-env run cli wp doctor check
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" doctor check
 ```
 
 It flags common issues such as autoload bloat, active `SAVEQUERIES`/`WP_DEBUG`, too many plugins, and pending updates.
@@ -73,13 +73,14 @@ If `wp doctor` is not installed, check manually:
 
 ```bash
 # Autoload size in bytes.
-npx wp-env run cli wp db query "SELECT SUM(LENGTH(option_value)) FROM \$(npx wp-env run cli wp db prefix)options WHERE autoload = 'yes'" --skip-column-names
+PREFIX="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db prefix)"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db query "SELECT SUM(LENGTH(option_value)) FROM ${PREFIX}options WHERE autoload = 'yes'" --skip-column-names
 
 # Active plugin count.
-npx wp-env run cli wp plugin list --status=active --format=count
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin list --status=active --format=count
 
 # Core and PHP version.
-npx wp-env run cli wp core version && npx wp-env run cli wp eval "echo PHP_VERSION;"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" core version && bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" eval "echo PHP_VERSION;"
 ```
 
 ### 3) Deep profiling
@@ -87,9 +88,9 @@ npx wp-env run cli wp core version && npx wp-env run cli wp eval "echo PHP_VERSI
 #### A) WP-CLI Profile command
 
 ```bash
-npx wp-env run cli wp profile stage --url="$LOCAL_URL/sample-page/"
-npx wp-env run cli wp profile hook --url="$LOCAL_URL/sample-page/" --spotlight
-npx wp-env run cli wp profile eval 'get_posts(["post_type" => "post", "posts_per_page" => 50]);'
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" profile stage --url="$LOCAL_URL/sample-page/"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" profile hook --url="$LOCAL_URL/sample-page/" --spotlight
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" profile eval 'get_posts(["post_type" => "post", "posts_per_page" => 50]);'
 ```
 
 #### B) Query Monitor via REST headers
@@ -137,7 +138,8 @@ foreach ( $posts as $post ) {
 Options with `autoload = 'yes'` load on every request:
 
 ```bash
-npx wp-env run cli wp db query "SELECT option_name, LENGTH(option_value) AS size FROM \$(npx wp-env run cli wp db prefix)options WHERE autoload = 'yes' ORDER BY size DESC LIMIT 20"
+PREFIX="$(bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db prefix)"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" db query "SELECT option_name, LENGTH(option_value) AS size FROM ${PREFIX}options WHERE autoload = 'yes' ORDER BY size DESC LIMIT 20"
 ```
 
 - Blobs > 100KB: consider disabling autoload or moving the data.
@@ -151,7 +153,7 @@ wp_set_option_autoload( 'my_heavy_option', false );
 #### C) Object cache
 
 ```bash
-npx wp-env run cli wp eval "echo file_exists( WP_CONTENT_DIR . '/object-cache.php' ) ? 'YES' : 'NO';"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" eval "echo file_exists( WP_CONTENT_DIR . '/object-cache.php' ) ? 'YES' : 'NO';"
 ```
 
 - Without a persistent object cache (Redis, Memcached), the cache is request-scoped only.
@@ -198,15 +200,15 @@ function fetch_external_data(): array {
 
 ```bash
 # List scheduled events.
-npx wp-env run cli wp cron event list
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" cron event list
 
 # Run a single event for debugging.
-npx wp-env run cli wp cron event run my_custom_event
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" cron event run my_custom_event
 ```
 
 - Distribute "due now" spikes across schedules.
 - Avoid heavy cron work in the HTTP request path.
-- For long tasks, run the event via system crontab (`npx wp-env run cli wp cron event run …`) instead of relying on `wp-cron.php` in the request path.
+- For long tasks, run the event via system crontab (`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" cron event run …`) instead of relying on `wp-cron.php` in the request path.
 
 ### 5) Verify the fix
 
@@ -214,7 +216,7 @@ Repeat the same measurement as the baseline on the same environment and URL:
 
 ```bash
 curl -o /dev/null -s -w "TTFB: %{time_starttransfer}s\nTotal: %{time_total}s\n" "$LOCAL_URL/sample-page/"
-npx wp-env run cli wp profile stage --url="$LOCAL_URL/sample-page/"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" profile stage --url="$LOCAL_URL/sample-page/"
 ```
 
 - Compare before/after numbers.
@@ -234,7 +236,7 @@ Use these improvements as context, but still measure before changing code.
 ## Verification checklist
 
 - [ ] Baseline and post-fix measurements captured on the same environment and URL.
-- [ ] `npx wp-env run cli wp doctor check` clean or improved (if available).
+- [ ] `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" doctor check` clean or improved (if available).
 - [ ] No new PHP errors or warnings in the logs.
 - [ ] Functional behavior unchanged.
 - [ ] Query count reduced (goal: < 50 for a standard page).

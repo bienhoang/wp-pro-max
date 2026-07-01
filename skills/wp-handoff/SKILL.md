@@ -69,6 +69,19 @@ Plain-language, task-oriented. Tailor to `strategy`:
 - **Plugins**: a short "what each plugin does + where to manage it" list from
   `plugins[]` (SEO, forms, cache, security, i18n…).
 - **Languages** (if `i18n.enabled`): how to switch + add translations (Polylang/WPML).
+- **Branding & Colors** (logos + colors + reset) — branch by `strategy`:
+  - `classic-acf` → **Appearance → Customize → Branding & Colors**: upload the
+    header logo and the separate footer logo (Logos), edit every brand color
+    (Colors), and use **Reset** to return to the original design. Changes preview
+    live and save to the front-end.
+  - `block-fse` → colors in **Site Editor → Styles** (and **Styles → Reset to
+    defaults** to revert). The separate **footer logo** lives in the Customizer,
+    whose menu WordPress hides for block themes — reach it directly at
+    **`/wp-admin/customize.php`** → Site Identity → Footer Logo.
+  - `page-builder` → colors in **Elementor → Site Settings → Global Colors**;
+    header logo in **Site Identity**; the footer logo via the host-theme
+    Customizer control (or the Elementor footer logo widget if the footer is
+    builder-managed — whichever the build used).
 
 ## 2. Credentials handoff (template — NO secrets)
 

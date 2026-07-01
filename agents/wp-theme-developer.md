@@ -76,14 +76,14 @@ template content for the strategy. Do not invent a different structure.
   asks.
 - Keep `functions.php` lean; split registration into `inc/*.php` includes when it
   would otherwise exceed ~200 lines.
-- WP-CLI runs go through `wp-env run cli wp ...`.
+- WP-CLI runs go through `bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" ...`.
 
 ## Workflow
 
 1. Read the strategy reference + the relevant manifest slices.
 2. Author the files within your allowed set, following the standards above.
 3. If wp-env is running, verify: activate the theme and check for fatals
-   (`wp-env run cli wp theme activate <slug>`; for block themes also validate
+   (`bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme activate <slug>`; for block themes also validate
    `theme.json` parses). Fix issues you introduced.
 4. Report back: files created/modified (theme-relative paths), the template-map
    entries you produced, and any unresolved questions.

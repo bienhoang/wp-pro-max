@@ -1,0 +1,36 @@
+{
+  "options": {
+    "blogname": "Seed Batch Live Test"
+  },
+  "posts": [
+    {
+      "slug": "sbtest-home",
+      "title": "SBTest Home",
+      "type": "page",
+      "template": "front-page.php",
+      "content": "<h1>SBTest Home</h1><p>Body with \"quotes\" & ampersands and <em>markup</em>.</p>",
+      "meta": { "sbtest_subtitle": "live" }
+    },
+    {
+      "slug": "sbtest-about",
+      "title": "SBTest About",
+      "type": "page",
+      "content": "<h1>SBTest About</h1><p>About body.</p>"
+    }
+  ],
+  "terms": [
+    { "tax": "category", "name": "SBTest Cat", "slug": "sbtest-cat" }
+  ],
+  "menus": [
+    {
+      "name": "SBTest Primary",
+      "location": "primary",
+      "items": [
+        { "post": "sbtest-home", "title": "Home" },
+        { "post": "sbtest-about", "title": "About" },
+        { "title": "External", "url": "https://example.com" }
+      ]
+    }
+  ],
+  "frontPage": "sbtest-home"
+}

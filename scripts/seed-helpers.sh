@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
-# seed-helpers.sh — idempotent "create-if-missing" WP-CLI helpers for the seeding
-# stages (seed-content + seed-plugin-data). This is the IDEMPOTENCY backbone:
-# every function checks existence before writing and records a stable key into
-# the manifest's `seed.idempotencyKeys`, so re-runs are safe.
+# seed-helpers.sh — DEPRECATED (retained as a shim). The seed stages now run as a
+# single PHP batch: build a pure-JSON payload and apply it via
+#   scripts/seed-batch-run.sh <payload.json>   →   wp eval-file seed-batch-runtime.php
+# (one container call per stage, idempotent, ~20× faster). See
+# scripts/seed-batch-runtime.php, scripts/seed-batch-run.sh, scripts/wp-cli-runner.sh
+# and the content-seeding / plugin-data-seeding skills. Do NOT add new callers.
+#
+# This file is kept ONLY because the pending WooCommerce catalog plan
+# (plans/2026-06-26-woocommerce-catalog-build-extension/phase-06-seeding.md)
+# still extends it; it must rebase its seeding onto the JSON batch engine before
+# this shim is removed. New work uses the batch engine.
+#
+# (Legacy behavior, unchanged below) idempotent "create-if-missing" WP-CLI helpers
+# for the seeding stages: every function checks existence before writing and
+# records a stable key into the manifest's `seed.idempotencyKeys`, so re-runs are
+# safe.
 #
 # Source this from a seed script:
 #   source "${CLAUDE_PLUGIN_ROOT}/scripts/seed-helpers.sh"

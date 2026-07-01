@@ -61,13 +61,26 @@ Notes:
 
 Write to the theme stylesheet (`:root`), generated from the same tokens:
 
+> **`--color-<slug>` verbatim contract.** Each color var name is `--color-` +
+> the token's `slug`, emitted **verbatim** — never abbreviate or collapse
+> (`foreground` ⇒ `--color-foreground`, NOT `--color-fg`; `background` ⇒
+> `--color-background`, NOT `--color-bg`). The theme-customization registry,
+> Customizer controls, the inline-CSS emitter, and reset all read this exact var
+> name (see `skills/wp-scaffold/references/theme-customization.md`). Any
+> abbreviation here makes the Customizer edit a phantom var.
+>
+> **Keep color vars out of `main.css`.** These `:root` color vars live only in
+> `style.css`. `assets/css/main.css` (which enqueues *after* `style.css`) must
+> carry **no `:root` color redeclarations**, or "Reset to defaults" reverts to
+> the raw source color instead of the token default.
+
 ```css
 :root {
-  /* color */
+  /* color — --color-<slug> verbatim */
   --color-primary: #1a73e8;
   --color-secondary: #ff5722;
-  --color-fg: #0f172a;
-  --color-bg: #ffffff;
+  --color-foreground: #0f172a;
+  --color-background: #ffffff;
 
   /* type */
   --font-heading: "Playfair Display", serif;
@@ -90,8 +103,10 @@ Write to the theme stylesheet (`:root`), generated from the same tokens:
 ```
 
 ## Consistency rules
-- Color `slug`s match between theme.json palette and CSS var names where
-  possible (`primary` ↔ `--color-primary`) so templates read predictably.
+- Color `slug`s match between theme.json palette and CSS var names **exactly**:
+  `slug` ⇒ `--color-<slug>` verbatim (`primary` ↔ `--color-primary`,
+  `foreground` ↔ `--color-foreground`). No abbreviation — the theme-customization
+  registry depends on this 1:1 mapping.
 - Keep spacing in `rem` in both targets; base on a 4/8px scale.
 - Enqueue Google Fonts (or self-host the listed weights) in the theme; record
   the enqueue requirement in `designTokens` notes for the conversion stage.

@@ -39,7 +39,7 @@ wpbuild_progress qa in-progress
 LOCAL="$(wpbuild_get '.urls.local // .env.localUrl // "http://localhost:8888"')"
 TOL="$(wpbuild_get '.qa.tolerance // 0.05')"
 OUTDIR="$(wpbuild_get '.optimization.outputDir // "."')"
-wp-env run cli wp option get siteurl >/dev/null || { echo "wp-env not reachable — start it first"; exit 1; }
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" option get siteurl >/dev/null || { echo "wp-env not reachable — start it first"; exit 1; }
 ```
 
 Ensure tooling once (Node deps for the visual diff + Lighthouse):

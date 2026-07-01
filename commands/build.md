@@ -32,6 +32,11 @@ qa → ship → handoff
 Each stage is owned by a skill (`wp-pro-max:<skill>`). Invoke the matching skill
 in order. After each stage, read `wp-build.json` progress and report briefly.
 
+`convert` is internally parallel: it authors the theme with a foundation agent
+then N parallel template agents and merges their outputs (see
+`references/parallel-execution.md`). This is an in-stage detail — the canonical
+stage order, gates, and `--from/--to` ranges above are unchanged.
+
 ## Procedure
 
 1. **Init / resume.** Resolve project root: if `wp-build.json` is not in the

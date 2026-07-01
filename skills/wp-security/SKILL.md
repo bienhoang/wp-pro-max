@@ -60,9 +60,9 @@ commands + rationale in `references/hardening-checklist.md`.
 | `file-permissions` | 644 files / 755 dirs / locked wp-config | guidance + check command |
 
 ```bash
-wp-env run cli wp config set DISALLOW_FILE_EDIT true --raw
-[[ "$PROD" == https://* ]] && wp-env run cli wp config set FORCE_SSL_ADMIN true --raw
-wp-env run cli wp config shuffle-salts || echo "shuffle-salts unavailable; rotate salts manually"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set DISALLOW_FILE_EDIT true --raw
+[[ "$PROD" == https://* ]] && bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config set FORCE_SSL_ADMIN true --raw
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" config shuffle-salts || echo "shuffle-salts unavailable; rotate salts manually"
 ```
 
 Emit the security mu-plugin (headers, xmlrpc, version hiding) into the target
@@ -73,9 +73,9 @@ mu-plugin overwrite is fine).
 ## 2. Vulnerability scan (core / plugins / themes)
 
 ```bash
-wp-env run cli wp core check-update --format=json   > sec/core-update.json
-wp-env run cli wp plugin list --format=json         > sec/plugins.json
-wp-env run cli wp theme list --format=json          > sec/themes.json
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" core check-update --format=json   > sec/core-update.json
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin list --format=json         > sec/plugins.json
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme list --format=json          > sec/themes.json
 ```
 
 Cross-reference installed slugs+versions against known-vuln sources. Prefer the

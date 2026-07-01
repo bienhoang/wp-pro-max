@@ -82,10 +82,10 @@ Notes:
 
 ```bash
 # Activate the converted theme.
-wp-env run cli wp theme activate "$(wpbuild_get '.project.themeSlug')"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme activate "$(wpbuild_get '.project.themeSlug')"
 # Pretty permalinks (needed for CPT archives / SEO).
-wp-env run cli wp rewrite structure '/%postname%/' --hard
-wp-env run cli wp rewrite flush --hard
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" rewrite structure '/%postname%/' --hard
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" rewrite flush --hard
 ```
 
 ## Common controls
@@ -94,7 +94,7 @@ wp-env run cli wp rewrite flush --hard
 wp-env start          # start / re-provision
 wp-env stop           # stop containers
 wp-env clean all      # wipe DB (destructive)
-wp-env run cli wp ...  # any WP-CLI command
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" ...  # any WP-CLI command
 wp-env logs           # tail container logs
 ```
 
@@ -102,6 +102,6 @@ wp-env logs           # tail container logs
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}' "http://localhost:$(wpbuild_get '.env.port // 8888')"   # expect 200/301
-wp-env run cli wp theme list --status=active
-wp-env run cli wp plugin list --status=active
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" theme list --status=active
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/wpx.sh" plugin list --status=active
 ```

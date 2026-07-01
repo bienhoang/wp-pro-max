@@ -1,8 +1,11 @@
 # Content Extraction — optimized HTML → WordPress page body
 
 Goal: pull the **real** editable body of each page out of the optimized source
-HTML and store it as `content/<slug>.html`, ready for
-`ensure_page <slug> <title> content/<slug>.html`. Never substitute lorem ipsum.
+HTML and store it as `content/<slug>.html`. The text of that file becomes the
+`posts[].content` JSON string in `seed-content-payload.json` (the seed batch
+applies it). **Keep the `content/<slug>.html` files** — they are also the source
+for the QA stage's `wp search-replace` and `wp post update` paths. Never
+substitute lorem ipsum.
 
 ## What belongs in the page body vs. the theme
 
@@ -24,9 +27,9 @@ HTML and store it as `content/<slug>.html`, ready for
    table, strong, em`. Strip framework utility wrappers but keep their inner
    content (unwrap `<div class="container">` etc.).
 4. Normalize: collapse whitespace, drop empty nodes, keep `alt` on images.
-5. For `img src`, rewrite to the media-library URL after `import_media`
-   (match by filename), or keep the relative path and rewrite post-import with
-   `wp search-replace` (guarded, dry-run first) during QA.
+5. For `img src`, list the file in the payload's `media[]` (the batch imports +
+   dedupes by title) and reference it, or keep the relative path and rewrite
+   post-import with `wp search-replace` (guarded, dry-run first) during QA.
 
 A quick host-side extraction with Node (no new deps; uses regex/cheerio if
 available). Pseudocode:
@@ -48,7 +51,7 @@ node -e '
 
 Prefer a real parser (cheerio / linkedom) when available for robustness; the
 regex form is a last-resort fallback. Validate output is non-empty before
-writing the `ensure_page` call.
+adding the page to the payload's `posts[]`.
 
 ## Brief-driven fallback (`source.type == "brief"`)
 
@@ -68,9 +71,10 @@ Use the brief's literal wording; do not pad with filler.
 
 ## Idempotency contract
 
-The generated `seed-content.sh` only calls `ensure_*` helpers, so content is
-keyed by slug/title. Re-extraction overwrites `content/<slug>.html`, but the
-page is **updated only by re-running with explicit intent** — `ensure_page`
-skips when the slug already exists. To push edited content into an existing
-page, use `wp post update <ID> --post_content="$(cat content/<slug>.html)"`
-(safe, targets one known ID), not a second `ensure_page`.
+The seed batch keys every post by slug, so the payload is safe to re-run: a page
+whose slug already exists is **skipped** (the re-run summary reports `created:0`).
+Re-extraction overwrites `content/<slug>.html`, but an existing page is **not**
+silently rewritten from the payload. To push edited content into an existing
+page, target the known ID explicitly:
+`wp post update <ID> --post_content="$(cat content/<slug>.html)"` — this is why
+the per-page HTML files are kept after seeding.

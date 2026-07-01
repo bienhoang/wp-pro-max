@@ -5,7 +5,7 @@
 | Layer | Choice | Why |
 |-------|--------|-----|
 | Distribution | **Claude Code Plugin** (`.claude-plugin/` + marketplace.json) | Installable, versioned, shareable kit. Skills namespace as `wp-pro-max:*`. |
-| Local WP env | **wp-env** (`@wordpress/env`, Docker) | Official, zero-config, scriptable, WP-CLI via `wp-env run cli`. |
+| Local WP env | **wp-env** (`@wordpress/env`, Docker) | Official, zero-config, scriptable; WP-CLI via `wpx` (`scripts/wpx.sh`: fast `docker exec`, `wp-env run cli` fallback). |
 | Theme strategy | **Adaptive**: Classic PHP+ACF / Block FSE / Page Builder | One analysis → three conversion backends. |
 | Data tooling | **WP-CLI** (+ guarded `wp db query` / `search-replace`) | Idempotent content & plugin-data seeding. |
 | Plugin data | ACF JSON, Elementor `_elementor_data` postmeta | Standard storage; CLI/DB seeding. |
