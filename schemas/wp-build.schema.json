@@ -409,6 +409,46 @@
         }
       }
     },
+    "handoff": {
+      "type": "object",
+      "description": "Output of wp-handoff. Docs are written into the TARGET project's docs/, not mirrored here; this records the screenshot-based admin guides so re-runs are resumable.",
+      "properties": {
+        "guides": {
+          "type": "object",
+          "description": "Screenshot-based wp-admin guides. Enumerated from the manifest (contentModel/designTokens/plugins/i18n) and captured against the live wp-env; falls back to placeholders when Docker/wp-env is down.",
+          "properties": {
+            "locale": {
+              "type": "string",
+              "description": "Language of the admin UI in the screenshots AND the guide prose (confirmed interactively; defaults to i18n.defaultLocale)."
+            },
+            "mode": {
+              "enum": ["captured", "placeholder"],
+              "description": "captured = real wp-admin screenshots; placeholder = wp-env was unreachable, guides carry a re-run command instead."
+            },
+            "generatedAt": { "type": "string" },
+            "flows": {
+              "type": "array",
+              "description": "One entry per authored guide. `id` is a stable resume key (auth, post-crud, tax-<slug>, cpt-<slug>, customizer-color-<slug>, plugin-<slug>, ...).",
+              "items": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "title": { "type": "string" },
+                  "category": { "type": "string" },
+                  "doc": { "type": "string", "description": "Repo-relative path to the guide markdown in the target project (e.g. docs/guides/02-post.md)." },
+                  "screenshots": {
+                    "type": "array",
+                    "description": "Repo-relative image paths embedded in the guide. Empty in placeholder mode.",
+                    "items": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "siteEditor": {
       "type": "object",
       "description": "Output of /wp-pro-max:site-editor child skills. Edits happen on optimization.outputDir only.",
