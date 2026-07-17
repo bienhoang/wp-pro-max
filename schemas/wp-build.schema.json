@@ -295,6 +295,79 @@
         }
       }
     },
+    "fix": {
+      "type": "object",
+      "description": "Output of /wp-pro-max:fix (propose-only; static PHP findings). Every path is repo-relative to the target project root — never an absolute host path.",
+      "properties": {
+        "generatedAt": { "type": "string" },
+        "trigger": { "type": "string", "description": "audit:<timestamp> | free-text" },
+        "addressed": {
+          "type": "array",
+          "description": "Findings whose approved diff was applied.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "action": { "type": "string" }
+            }
+          }
+        },
+        "dismissed": {
+          "type": "array",
+          "description": "Findings triaged as false positives. A reason is mandatory.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "remaining": {
+          "type": "array",
+          "description": "Confirmed findings left unfixed (declined, or needs a human).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "description": "Findings outside v1's scope (line 0 / live / external). Reported with a skill pointer, never silently dropped.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "file": { "type": "string" },
+              "reason": { "type": "string" },
+              "pointer": { "type": "string" }
+            }
+          }
+        },
+        "filesChanged": { "type": "array", "items": { "type": "string" } },
+        "backupDir": { "type": "string" },
+        "runtimeChanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cmd": { "type": "string" },
+              "option": { "type": "string", "description": "Option NAME only — never the value. Option values may hold SMTP/API credentials and wp-build.json is committed." }
+            }
+          }
+        },
+        "verified": { "type": "boolean", "description": "True only when the static re-scan positively confirmed the fix. A failed or unparseable scan is false, never true." }
+      }
+    },
     "env": {
       "type": "object",
       "description": "Local wp-env settings.",

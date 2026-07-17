@@ -15,7 +15,7 @@ resumable, and idempotent. Read this before authoring any stage skill.
 
 `analyze` · `optimize` · `model` · `tokens` · `convert` · `plugins` ·
 `scaffold` · `seed-content` · `seed-plugin-data` · `qa` · `seo` · `security` ·
-`i18n` · `ship` · `env` · `handoff` · `audit` · `section-redesign` ·
+`i18n` · `ship` · `env` · `handoff` · `audit` · `fix` · `section-redesign` ·
 `content-enrichment` · `pre-conversion-qa`
 
 Three additional stage ids are owned by `/wp-pro-max:site-editor` and run
@@ -23,6 +23,11 @@ Three additional stage ids are owned by `/wp-pro-max:site-editor` and run
 `pre-conversion-qa`. They are optional, non-gating (they do not block `ship`),
 and operate only on `optimization.outputDir`. They must never mutate `source/`
 or `assets/`; all edits target the optimized working copy.
+
+`audit` and `fix` are likewise **outside the main pipeline**: on-demand,
+optional, and non-gating. `audit` finds issues (read-only); `fix` remediates the
+findings `audit` recorded. Both record progress so an interrupted run resumes
+cleanly rather than re-deriving stale state.
 
 ## Skill layout (each skill folder)
 

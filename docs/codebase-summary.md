@@ -6,8 +6,8 @@
 
 ```
 .claude-plugin/      plugin.json + marketplace.json (install manifests)
-commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, audit.md, figma.md, component.md
-skills/              24 skills (each SKILL.md + references/)
+commands/            build.md (orchestrator), site-editor.md, status.md, env.md, init.md (project scaffolder), plugin.md (standalone plugin builder), a11y-audit.md, audit.md, fix.md, figma.md, component.md
+skills/              29 skills (each SKILL.md + references/)
 agents/              wp-theme-developer, wp-data-engineer, wp-deployer, wp-plugin-developer, a11y-checker, figma-analyzer
 scripts/             shared bash/node helpers
 schemas/             wp-build.schema.json + wp-plugin.schema.json (manifest contracts)
@@ -37,6 +37,7 @@ plans/               implementation plan + phases
 | wp-security | `security` | → security.* (hardening + vuln scan) |
 | wp-qa | `qa` | analysis/urls → qa.* (gates ship) |
 | wp-audit | `audit` | theme/plugin + wp-env → audit.* report |
+| wp-fix | `fix` | audit.findings → fix.* (propose-only remediation of static PHP findings) |
 | wp-ship | `ship` | deploy/urls → remote site + rollbackPoint |
 | wp-handoff | `handoff` | full manifest → client docs package |
 | section-redesign | `section-redesign` | optimized HTML → redesigned HTML |
@@ -78,10 +79,11 @@ plans/               implementation plan + phases
 | audit-static.sh | static code-style/a11y/security scanner for wp-audit | `bash … <root> <theme> <scope> <outdir>` |
 | audit-live.sh | live performance/security/a11y probes for wp-audit | `bash … <local-url> <scope> <work-dir>` |
 | audit-aggregate.sh | aggregate per-category findings into reports | `bash … --work-dir … --mode … --scope …` |
+| wp-fix-lib.sh | arg parsing, finding partition, backup, Gate 3 verify for /wp-pro-max:fix | sourced OR `bash … <cmd>` |
 | migrate-urls.sh | guarded `wp search-replace` wrapper | `bash …` / `… --apply` |
 | validate-port.sh | frontmatter, link, and placeholder checks for ported skills/agents/commands | `bash scripts/validate-port.sh [file…]` |
 
-The sourced libs (`manifest-lib.sh`, `wp-cli-runner.sh`, `seed-helpers.sh`) are
+The sourced libs (`manifest-lib.sh`, `wp-cli-runner.sh`, `seed-helpers.sh`, `wp-fix-lib.sh`) are
 **zsh- and bash-safe**: no source-time `set -e`, no zsh-reserved `status`/`path`
 vars, shell-aware runner/array handling, and robust executed-vs-sourced detection.
 

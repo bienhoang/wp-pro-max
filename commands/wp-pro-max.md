@@ -46,7 +46,7 @@ ROUTE_FILE="$WPM_ROUTE_FILE"
 Task(
   subagent_type="coder",
   description="Classify WP Pro Max request",
-  prompt="You are a request classifier for WP Pro Max. Read the JSON at ${INPUT_FILE} (contains request + pwd). Classify into exactly one target from this allowlist: commands[build,status,env,init,plugin,a11y-audit,audit,figma,component,site-editor]; skills[html-analysis,html-optimization,theme-conversion,plugin-selection,wp-scaffold,content-seeding,plugin-data-seeding,wp-i18n,wp-seo,wp-security,wp-qa,wp-ship,wp-handoff,wp-env-setup,section-redesign,content-enrichment,pre-conversion-qa]; agents[wp-theme-developer,wp-data-engineer,wp-deployer,wp-plugin-developer,a11y-checker,figma-analyzer]. Write JSON to ${ROUTE_FILE}: {\"target_type\":\"command|skill|agent|unknown\",\"target\":\"<slug>\",\"args\":\"<remaining args>\",\"reason\":\"<one line>\"}. Guidance: build/convert/create site → command build; status/progress → status; local env → env; scaffold → init; plugin dev → plugin; accessibility audit → a11y-audit; best-practice/code/security/performance audit → audit; Figma → figma or figma-analyzer; component → component; redesign/enrich/check optimized HTML → site-editor; skill-specific → matching skill; theme/template work → wp-theme-developer; data/seed/DB → wp-data-engineer; deploy/ship/rollback → wp-deployer; plugin code → wp-plugin-developer; unclear → unknown. Return only the path to ${ROUTE_FILE}."
+  prompt="You are a request classifier for WP Pro Max. Read the JSON at ${INPUT_FILE} (contains request + pwd). Classify into exactly one target from this allowlist: commands[build,status,env,init,plugin,a11y-audit,audit,fix,figma,component,site-editor]; skills[html-analysis,html-optimization,theme-conversion,plugin-selection,wp-scaffold,content-seeding,plugin-data-seeding,wp-i18n,wp-seo,wp-security,wp-qa,wp-ship,wp-handoff,wp-env-setup,section-redesign,content-enrichment,pre-conversion-qa]; agents[wp-theme-developer,wp-data-engineer,wp-deployer,wp-plugin-developer,a11y-checker,figma-analyzer]. Write JSON to ${ROUTE_FILE}: {\"target_type\":\"command|skill|agent|unknown\",\"target\":\"<slug>\",\"args\":\"<remaining args>\",\"reason\":\"<one line>\"}. Guidance: build/convert/create site → command build; status/progress → status; local env → env; scaffold → init; plugin dev → plugin; accessibility audit → a11y-audit; best-practice/code/security/performance audit → audit; Figma → figma or figma-analyzer; component → component; redesign/enrich/check optimized HTML → site-editor; skill-specific → matching skill; theme/template work → wp-theme-developer; data/seed/DB → wp-data-engineer; deploy/ship/rollback → wp-deployer; plugin code → wp-plugin-developer; unclear → unknown. AUDIT vs FIX vs AUTHORING — audit FINDS issues (read-only); fix REMEDIATES issues the audit already recorded, or diagnoses a broken-site symptom; authoring BUILDS something new. 'fix audit findings' / 'sửa lỗi audit' / 'remediate the security findings' / 'trắng trang sau khi activate' (a symptom to diagnose) → command fix. 'fix the header template' / 'fix the layout' (build or change a template) → agent wp-theme-developer, NOT command fix. Return only the path to ${ROUTE_FILE}."
 )
 
 # 2. Validate the classifier output.
@@ -71,6 +71,7 @@ case "$TARGET_TYPE" in
       plugin) Skill(name="wp-pro-max:plugin", arguments="$ARGS") ;;
       a11y-audit) Skill(name="wp-pro-max:a11y-audit", arguments="${ARGS:-all}") ;;
       audit) Skill(name="wp-pro-max:audit", arguments="${ARGS:-}") ;;
+      fix) Skill(name="wp-pro-max:fix", arguments="${ARGS:-}") ;;
       figma) Skill(name="wp-pro-max:figma", arguments="$ARGS") ;;
       component) Skill(name="wp-pro-max:component", arguments="$ARGS") ;;
       site-editor) Skill(name="wp-pro-max:site-editor", arguments="$ARGS") ;;
@@ -100,7 +101,7 @@ case "$TARGET_TYPE" in
   unknown|*)
     echo "wp-pro-max: I couldn't confidently route this request." >&2
     echo "Reason: $REASON" >&2
-    echo "Try one of: build, status, env, init, plugin, a11y-audit, audit, figma, component, site-editor, or name a specific skill/agent." >&2
+    echo "Try one of: build, status, env, init, plugin, a11y-audit, audit, fix, figma, component, site-editor, or name a specific skill/agent." >&2
     exit 1
     ;;
 esac

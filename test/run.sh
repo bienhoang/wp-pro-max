@@ -183,6 +183,20 @@ check_wpx() {
   return 1
 }
 
+# --- 9. wp-fix lib test --------------------------------------------------------
+check_wp_fix() {
+  if [ ! -f test/wp-fix.test.sh ]; then
+    _skip "test/wp-fix.test.sh not present"
+    return 2
+  fi
+  if bash test/wp-fix.test.sh ; then
+    _pass "test/wp-fix.test.sh"
+    return 0
+  fi
+  _fail "test/wp-fix.test.sh reported failures"
+  return 1
+}
+
 # --- 8. seeder behavioral tests ------------------------------------------------
 check_seeder() {
   if [ ! -f test/seeder/run.sh ]; then
@@ -205,6 +219,7 @@ run_check "validate-port.sh"         check_validate_port
 run_check "contract-lint.sh"         check_contract_lint
 run_check "wpx shim test"            check_wpx
 run_check "seeder tests"             check_seeder
+run_check "wp-fix lib test"          check_wp_fix
 
 printf '\n\033[1m==> Summary\033[0m\n'
 _say "  PASS=$PASS  FAIL=$FAIL  SKIP=$SKIP"

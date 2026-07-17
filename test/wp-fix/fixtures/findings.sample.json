@@ -1,0 +1,116 @@
+{
+  "_comment": "audit.findings input shape for wp-fix.test.sh. Mirrors what scripts/audit-static.sh and scripts/audit-live.sh actually emit. Absolute `file` paths carry the __ROOT__ placeholder, which the test substitutes with its mktemp sandbox — audit-static.sh:41 resolves ROOT to an absolute host path, so real findings always arrive absolute.",
+
+  "findings": [
+    {
+      "_case": "supported — confirmed XSS, real line. Note category is code-style, NOT security.",
+      "id": "wpcs-output-not-escaped",
+      "category": "code-style",
+      "severity": "high",
+      "file": "__ROOT__/themes/acme/header.php",
+      "line": 8,
+      "message": "User input echoed without escaping",
+      "suggestion": "Use esc_html(), esc_attr(), or wp_kses_post().",
+      "external": false
+    },
+    {
+      "_case": "supported — false positive: already escaped via a theme helper. Gate 1 must dismiss this.",
+      "id": "wpcs-output-not-escaped",
+      "category": "code-style",
+      "severity": "high",
+      "file": "__ROOT__/themes/acme/footer.php",
+      "line": 6,
+      "message": "User input echoed without escaping",
+      "suggestion": "Use esc_html(), esc_attr(), or wp_kses_post().",
+      "external": false
+    },
+    {
+      "_case": "supported — ordering pair (low line). Must be applied AFTER line 42.",
+      "id": "wpcs-missing-sanitize",
+      "category": "code-style",
+      "severity": "high",
+      "file": "__ROOT__/themes/acme/page.php",
+      "line": 10,
+      "message": "Superglobal used directly",
+      "suggestion": "Sanitize with sanitize_*() or wp_unslash().",
+      "external": false
+    },
+    {
+      "_case": "supported — ordering pair (high line). Must be applied FIRST.",
+      "id": "wpcs-direct-db-no-prepare",
+      "category": "code-style",
+      "severity": "high",
+      "file": "__ROOT__/themes/acme/page.php",
+      "line": 42,
+      "message": "SQL built with interpolated variables",
+      "suggestion": "Use $wpdb->prepare() with placeholders.",
+      "external": false
+    },
+    {
+      "_case": "supported — medium severity, filtered out by --severity high.",
+      "id": "sec-base64-decode",
+      "category": "security",
+      "severity": "medium",
+      "file": "__ROOT__/themes/acme/functions.php",
+      "line": 12,
+      "message": "base64_decode() present",
+      "suggestion": "Avoid obfuscation; validate any decoded data.",
+      "external": false
+    },
+    {
+      "_case": "unsupported — a11y is hardcoded line:0 (audit-static.sh:241). No anchor for a diff.",
+      "id": "a11y-imgAlt",
+      "category": "a11y",
+      "severity": "high",
+      "file": "__ROOT__/themes/acme/header.php",
+      "line": 0,
+      "message": "Image missing alt attribute",
+      "suggestion": "Add descriptive alt or alt=\"\" if decorative.",
+      "external": false
+    },
+    {
+      "_case": "unsupported — live perf finding. `file` is a URL, not a path.",
+      "id": "perf-lcp-high",
+      "category": "performance",
+      "severity": "high",
+      "file": "http://localhost:8888/",
+      "line": 0,
+      "message": "LCP 4200ms exceeds target 2500ms",
+      "suggestion": "Optimize hero image, preload critical assets.",
+      "external": false
+    },
+    {
+      "_case": "unsupported — live vuln finding. `file` is plugin/<slug>; remediation is an update.",
+      "id": "sec-live-plugin-contact-form-7",
+      "category": "security",
+      "severity": "high",
+      "file": "plugin/contact-form-7",
+      "line": 0,
+      "message": "Known vulnerability in Contact Form 7",
+      "suggestion": "Update to 5.9.8",
+      "external": false
+    },
+    {
+      "_case": "unsupported — external:true. Third-party code; an edit is reverted by the next update.",
+      "id": "sec-eval",
+      "category": "security",
+      "severity": "critical",
+      "file": "__ROOT__/plugins/woocommerce/legacy.php",
+      "line": 5,
+      "message": "eval() or equivalent dynamic execution found",
+      "suggestion": "Remove eval(); use safe parsing or whitelists.",
+      "external": true
+    },
+    {
+      "_case": "unsupported — real line, but not one of the 9 rules. Secrets are rotated, not patched.",
+      "id": "sec-committed-secret",
+      "category": "security",
+      "severity": "critical",
+      "file": "__ROOT__/themes/acme/config.php",
+      "line": 3,
+      "message": "Possible committed secret: aws-key",
+      "suggestion": "Rotate the secret and remove it from source control.",
+      "external": false
+    }
+  ]
+}

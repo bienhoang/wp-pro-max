@@ -38,9 +38,13 @@ outputs back, (4) records progress. This is what makes runs **resumable** and
   (`source`, `strategy`, `analysis`, `contentModel`, `designTokens`, `plugins`,
   `theme`, `seed`, `urls`, `deploy`, `progress`).
 - **Stage contract:** `references/manifest-contract.md` — the authoritative rules
-  every stage must obey. Canonical stage ids: `analyze · optimize · model ·
+  every stage must obey, and the **single source of truth for the canonical stage
+  ids** (`test/contract-lint.sh` derives the set from it, not from this file — so
+  copy edits here, never the reverse). Main pipeline: `analyze · optimize · model ·
   tokens · convert · plugins · scaffold · seed-content · seed-plugin-data · qa ·
-  seo · security · i18n · ship · env · handoff`.
+  seo · security · i18n · ship · env · handoff`. Outside the main pipeline
+  (on-demand, non-gating): `audit · fix · section-redesign · content-enrichment ·
+  pre-conversion-qa`.
 
 ### Component layers
 

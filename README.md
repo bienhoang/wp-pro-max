@@ -100,7 +100,22 @@ cd acme-widgets && /wp-pro-max:plugin add cpt
 /wp-pro-max:audit
 /wp-pro-max:audit --scope all
 /wp-pro-max:audit --live
+
+# Fix what the audit found (propose-only — shows a diff, you approve each change)
+/wp-pro-max:fix
+/wp-pro-max:fix --dry-run
+/wp-pro-max:fix --severity high
+
+# Or describe a symptom and let it diagnose
+/wp-pro-max:fix "trắng trang sau khi activate theme"
 ```
+
+`fix` v1 covers the nine static PHP rules — the findings that carry a real line
+number to anchor a diff to. Accessibility findings are reported with a pointer to
+`/wp-pro-max:a11y-audit` (they have no line number, and most need authored
+content rather than a mechanical edit); live performance/vulnerability findings
+and third-party code are reported, not fixed. Nothing is edited without your
+approval, and every changed file is backed up first.
 
 Skills are also auto-invoked by name when relevant (`wp-pro-max:html-analysis`,
 `wp-pro-max:theme-conversion`, `wp-pro-max:wp-ship`, …).
@@ -139,6 +154,7 @@ any custom plugin code.
 | `wp-pro-max` | Natural-language router — describe what you want and dispatch to the right command, skill, or agent. |
 | `build` | Run the full WP Pro Max pipeline — static HTML (or a brief) to a production WordPress site. |
 | `audit` | Run a best-practice audit (a11y, security, performance, code-style) on the active theme/plugin. |
+| `fix` | Remediate audit findings, or diagnose a described symptom. Propose-only: shows a diff, you approve each change. |
 | `status` | Show the WP Pro Max build manifest and per-stage progress for the current project. |
 | `env` | Provision or manage the local wp-env WordPress environment for the current build. |
 | `init` | Scaffold a target WordPress project directory (inputs + `wp/` + starter `wp-build.json`). |
@@ -169,6 +185,7 @@ any custom plugin code.
 | `wp-security` | Harden WordPress and scan core/plugins/themes/secrets for vulnerabilities. |
 | `wp-qa` | Quality gate: visual diff, responsive checks, broken links, a11y, Core Web Vitals. |
 | `wp-audit` | Best-practice audit (a11y, security, performance, code-style) with static + live probes. |
+| `wp-fix` | Remediate `audit.findings`: triage against the source, propose a diff per finding, verify by re-scan. |
 | `wp-ship` | Ship the local wp-env build to a production host/VPS with backup + rollback. |
 | `wp-handoff` | Generate client handbook, credentials template, maintenance runbook, update strategy. |
 | `wp-plugin-dev` | Scaffold and build a standalone plugin (`new`, `add`, `lint`, `test`, `package`). |
@@ -193,7 +210,7 @@ any custom plugin code.
 `plugin-scaffold.sh`, `plugin-package.sh`, the seed batch engine
 (`seed-batch-runtime.php`, `seed-batch-run.sh`, `wp-cli-runner.sh`),
 `seed-helpers.sh` (deprecated shim), `visual-diff.mjs`, `migrate-urls.sh`,
-`audit-aggregate.sh`, `wp-pro-max-router-lib.sh`.
+`audit-aggregate.sh`, `wp-fix-lib.sh`, `wp-pro-max-router-lib.sh`.
 
 ## Docs
 
