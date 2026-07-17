@@ -47,8 +47,11 @@ main() {
   debug=true
 
   # wordpress.org plugin slugs only (premium ZIPs handled manually).
+  # wp-env's `plugins` entries must be a local path or a URL to a .zip — bare
+  # slugs are rejected ("Invalid or unrecognized source"), so resolve each
+  # wporg slug to its canonical downloads.wordpress.org zip URL.
   local plugins_json
-  plugins_json="$(wpbuild_get '[ .plugins[]? | select(.source=="wporg" or (has("source")|not)) | .slug ]')"
+  plugins_json="$(wpbuild_get '[ .plugins[]? | select(.source=="wporg" or (has("source")|not)) | "https://downloads.wordpress.org/plugin/" + .slug + ".zip" ]')"
   [[ "$plugins_json" == "null" || -z "$plugins_json" ]] && plugins_json='[]'
 
   # core value: a JSON null (latest) or a quoted ref string.
