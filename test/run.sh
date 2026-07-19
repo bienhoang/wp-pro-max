@@ -15,6 +15,7 @@
 #   5. scripts/validate-port.sh        (the existing snippet linter)
 #   6. test/contract-lint.sh           (manifest / wpx contract enforcer)
 #   7. test/seeder/run.sh              (seeder behavioral tests)
+#   8. test/handoff-html-export.test.sh (handoff HTML export behavioral test)
 #
 # File discovery excludes node_modules, vendor, .git (Red Team #4): these are
 # dependency / VCS trees, never linted. Centralized in walk().
@@ -211,6 +212,20 @@ check_seeder() {
   return 1
 }
 
+# --- 10. handoff HTML export test ----------------------------------------------
+check_handoff_html() {
+  if [ ! -f test/handoff-html-export.test.sh ]; then
+    _skip "test/handoff-html-export.test.sh not present"
+    return 2
+  fi
+  if bash test/handoff-html-export.test.sh ; then
+    _pass "test/handoff-html-export.test.sh"
+    return 0
+  fi
+  _fail "test/handoff-html-export.test.sh reported failures"
+  return 1
+}
+
 run_check "claude plugin validate"   check_plugin_validate
 run_check "bash -n (shell syntax)"   check_bash_syntax
 run_check "node --check (mjs syntax)" check_node_check
@@ -220,6 +235,7 @@ run_check "contract-lint.sh"         check_contract_lint
 run_check "wpx shim test"            check_wpx
 run_check "seeder tests"             check_seeder
 run_check "wp-fix lib test"          check_wp_fix
+run_check "handoff HTML export test" check_handoff_html
 
 printf '\n\033[1m==> Summary\033[0m\n'
 _say "  PASS=$PASS  FAIL=$FAIL  SKIP=$SKIP"

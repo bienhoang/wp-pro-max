@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- wp-pro-max:handoff-site -->
+<!--
+  Handoff site template — filled by scripts/handoff-html-export.mjs.
+
+  Placeholders (literal, replaced by the engine):
+    {{PROJECT_NAME}}   site/project name (header + <title>)
+    {{GENERATED_AT}}   ISO timestamp string (passed in; never Date.now() in render)
+    {{DOMAIN_NOTE}}    one-line note about the link domain mode
+    {{NAV}}            the left-nav <ul> tree (top docs + a nested Guides group)
+    {{CONTENT}}        the concatenated <section id="..."> blocks
+
+  Markup contract shared with the engine:
+    - Each nav link is <a href="#<section-id>">; every href must resolve to a
+      <section id="<section-id>"> in {{CONTENT}}.
+    - The Guides group is a top <li> whose nested <ul> holds the flow sub-items.
+    - CSS/JS are relative: assets/css/handoff.css, assets/js/handoff.js.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{PROJECT_NAME}} — Handoff</title>
+  <link rel="stylesheet" href="assets/css/handoff.css">
+</head>
+<body>
+  <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰ Menu</button>
+
+  <div class="layout">
+    <nav class="sidenav" aria-label="Handoff sections">
+      <div class="sidenav__head">
+        <span class="sidenav__title">{{PROJECT_NAME}}</span>
+        <span class="sidenav__sub">Handoff package</span>
+      </div>
+      {{NAV}}
+      <p class="sidenav__note">{{DOMAIN_NOTE}}</p>
+    </nav>
+
+    <main class="content" id="content">
+      {{CONTENT}}
+      <footer class="content__footer">
+        <p>Generated {{GENERATED_AT}}. This document was produced from the site build manifest.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="assets/js/handoff.js"></script>
+</body>
+</html>

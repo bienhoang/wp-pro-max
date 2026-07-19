@@ -446,6 +446,24 @@
               }
             }
           }
+        },
+        "htmlExport": {
+          "type": "object",
+          "description": "Optional single-file HTML render of the handoff package (index.html + assets) produced by scripts/handoff-html-export.mjs. Excludes the credentials doc; rewrites local URLs to the target domain.",
+          "properties": {
+            "generatedAt": { "type": "string" },
+            "output": { "type": "string", "description": "Repo-relative path to the generated index.html in the target project (e.g. docs/handoff-site/index.html)." },
+            "domainMode": {
+              "enum": ["production", "placeholder"],
+              "description": "production = urls.production used in links; placeholder = the literal <your-domain> placeholder was used."
+            },
+            "sections": {
+              "type": "array",
+              "description": "Section ids rendered into index.html, in order (e.g. handbook, guide-<flow-id>, maintenance, ...).",
+              "items": { "type": "string" }
+            },
+            "imagesCopied": { "type": "integer" }
+          }
         }
       }
     },

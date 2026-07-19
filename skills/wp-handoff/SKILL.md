@@ -38,6 +38,9 @@ Written into the **target project's** `docs/` (not the plugin repo):
   if `qa.a11y` has open moderate/minor items).
 - `docs/guides/` — step-by-step `wp-admin` guides **with real screenshots**, one
   per admin flow, in the confirmed language (see section 6 + `references/admin-guides.md`).
+- `docs/handoff-site/` — **optional** single-file HTML render of the handoff
+  package (`index.html` + `assets/`), produced only on `--html` or user opt-in
+  (see section 7 + `references/html-export.md`).
 
 Then `wpbuild_progress handoff done`.
 
@@ -151,6 +154,32 @@ contract in `references/admin-guides.md` — the flow, in order:
    `generatedAt`, `flows[]` with `id`/`title`/`category`/`doc`/`screenshots[]`).
    **Resume**: skip flows already `captured` with screenshots unless `--force`.
 
+## 7. HTML export (optional)
+
+Offer a single self-contained HTML site of the whole handoff package (guides +
+the other client docs) so everything shares one style. Full contract in
+`references/html-export.md`. Flow:
+
+1. **Decide whether to run.** If invoked with `--html` → run. Else, in an
+   interactive run → `AskUserQuestion` ("Export the handoff into a single HTML
+   site?" · yes/no). In `--auto`/non-interactive without `--html` → skip + log.
+2. **Resolve the target origin** (links must never point at localhost) — else
+   the script defaults it: `ORIGIN="$(wpbuild_get '.urls.production // "<your-domain>"')"`.
+3. **Render** (the script does all the work):
+   ```bash
+   node "${CLAUDE_PLUGIN_ROOT}/scripts/handoff-html-export.mjs" \
+     --manifest wp-build.json --docs docs --out docs/handoff-site \
+     --domain "$ORIGIN" --generated-at "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+   ```
+   Exit `2` → docs missing (run earlier steps first); `5` → a localhost URL
+   survived (report, don't record). Parse the summary line for the counts + mode.
+4. **Link it** from `docs/site-handbook.md` ("Browse the full handoff as a
+   website: `docs/handoff-site/index.html`").
+5. **Record** `handoff.htmlExport` (`generatedAt`, `output`, `domainMode`,
+   `sections[]`, `imagesCopied`) via `wpbuild_set` — see `references/html-export.md`.
+
+The credentials doc is excluded from the HTML by design; it stays markdown-only.
+
 ## Acceptance
 
 - All five core docs exist in the target `docs/`, populated from the manifest (no
@@ -162,5 +191,9 @@ contract in `references/admin-guides.md` — the flow, in order:
   and the admin UI in the screenshots share the confirmed language.
 - `handoff.guides` records `locale`, `mode`, and per-flow `doc` + `screenshots`.
   wp-env down → `mode: "placeholder"` with a re-run command, pipeline not blocked.
+- If the HTML export ran: `docs/handoff-site/index.html` + `assets/` exist, no
+  `localhost` in the HTML, the credentials doc is absent, and `handoff.htmlExport`
+  is recorded. Skipped cleanly (logged) when neither `--html` nor opt-in applies.
 
-See: `references/maintenance-runbook.md`, `references/admin-guides.md`.
+See: `references/maintenance-runbook.md`, `references/admin-guides.md`,
+`references/html-export.md`.
